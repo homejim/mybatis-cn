@@ -17,7 +17,7 @@ MyBatis 是一款优秀的支持自定义 SQL 查询、存储过程和高级映�
 ## MyBatis 源码解析
 
 你还不知道 MyBatis 的源码怎么阅读， 跟我的文章走就对了！
-- [mybatis源码-解析配置文件（一）之XML的DOM解析方式](https://www.cnblogs.com/homejim/p/9652273.html)：MyBatis的使用 XML 配置， 源码阅读前， 务必看看这个。
+- [mybatis源码-解析配置文件（一）之XML的DOM解析方式](https://www.cnblogs.com/homejim/p/9652273.html)：MyBatis使用的时候 XML 配置， 源码阅读前， 务必看看这个。
 - [mybatis源码-解析配置文件（二）之解析的流程](https://www.cnblogs.com/homejim/p/9654992.html)： 配置文件的解析流程， 先知道大的流程， 再去研究细节
 - [mybatis源码-解析配置文件（三）之配置文件Configuration解析](https://www.cnblogs.com/homejim/p/9672224.html)： 这是 mybatis 解析配置文件的核心
 - [mybatis源码-解析配置文件（四）之配置文件Mapper解析](https://www.cnblogs.com/homejim/p/9741404.html)： mapper.xml中的文件最后都解析成什么了？
