@@ -24,6 +24,7 @@ MyBatis 是一款优秀的支持自定义 SQL 查询、存储过程和高级映�
 - [mybatis源码-解析配置文件（四-1）之配置文件Mapper解析(cache)](https://www.cnblogs.com/homejim/p/9743921.html)： 缓存中的配置都有什么用
 - [mybatis百科-列映射类ResultMapping](https://www.cnblogs.com/homejim/p/9833863.html)： resultMap 节点解析相关的类
 - [mybatis百科-结果集映射类ResultMap](https://www.cnblogs.com/homejim/p/9840373.html)： resultMap 节点解析相关的类
+- [ mybatis源码-解析配置文件（四-二）之配置文件Mapper解析(resultMap)](https://www.cnblogs.com/homejim/p/9853703.html)： resultMap 完整解析流程。 看完知道原来 resultMap 在内存中长这样
 - 未完待续
 
 ## 找不到中文注释？
