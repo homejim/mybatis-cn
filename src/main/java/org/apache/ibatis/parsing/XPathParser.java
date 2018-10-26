@@ -209,6 +209,11 @@ public class XPathParser {
     return evalNode(document, expression);
   }
 
+  /**
+   * 获取节点. 其实就是使用 DOM 结合 Xpath 的方法获得各个节点
+   * @param expression
+   * @return
+   */
   public XNode evalNode(Object root, String expression) {
     Node node = (Node) evaluate(expression, root, XPathConstants.NODE);
     if (node == null) {

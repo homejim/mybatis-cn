@@ -118,10 +118,15 @@ public class XNode {
     return xpathParser.evalDouble(node, expression);
   }
 
+
   public List<XNode> evalNodes(String expression) {
     return xpathParser.evalNodes(node, expression);
   }
-
+  /**
+   * 获取节点. 其实就是使用 DOM 结合 Xpath 的方法获得各个节点
+   * @param expression
+   * @return
+   */
   public XNode evalNode(String expression) {
     return xpathParser.evalNode(node, expression);
   }
@@ -297,8 +302,13 @@ public class XNode {
     }
   }
 
+  /**
+   * 实际上是调用了 DOM 中的 Node 类的 getChildNodes 函数， 并将返回的节点转换为 XNode , 添加到对应的 List 中返回
+   * @return
+   */
   public List<XNode> getChildren() {
     List<XNode> children = new ArrayList<>();
+    // DOM 方式获取所有子节点
     NodeList nodeList = node.getChildNodes();
     if (nodeList != null) {
       for (int i = 0, n = nodeList.getLength(); i < n; i++) {
@@ -311,6 +321,10 @@ public class XNode {
     return children;
   }
 
+  /**
+   * 获取子节点并存到 Properties 对象中
+   * @return
+   */
   public Properties getChildrenAsProperties() {
     Properties properties = new Properties();
     for (XNode child : getChildren()) {

@@ -35,24 +35,37 @@ import org.apache.ibatis.session.Configuration;
  * @author Clinton Begin
  */
 public class ResultMap {
+  // 这个是mybatis存储所有信息的对象
   private Configuration configuration;
 
+  // resultMap 节点的 id
   private String id;
+  // resultMap 节点的 type
   private Class<?> type;
+  // 用于记录 <discriminayor> 节点之外的其他映射关系
   private List<ResultMapping> resultMappings;
+  // 记录映射关系中带有 ID 标记的映射关系。 如 id， constructor 等节点
   private List<ResultMapping> idResultMappings;
+  // 记录映射关系中有 Constructor 标记的映射关系
   private List<ResultMapping> constructorResultMappings;
+  // 记录映射关系中没有 Constructor 标记的映射关系
   private List<ResultMapping> propertyResultMappings;
+  // 记录所有映射关系中涉及 column 属性的集合
   private Set<String> mappedColumns;
   private Set<String> mappedProperties;
+  // 鉴别器， 对应 <discriminayor> 节点
   private Discriminator discriminator;
+  // 是否含有嵌套的结果映射， 如果某个映射关系中有 resultMap， 没有 resultSet ， 则为true
   private boolean hasNestedResultMaps;
+  // 是否存在嵌套查询
   private boolean hasNestedQueries;
+  // 是否开启自动映射
   private Boolean autoMapping;
 
   private ResultMap() {
   }
 
+  // 建造者模式
   public static class Builder {
     private static final Log log = LogFactory.getLog(Builder.class);
 
@@ -89,11 +102,16 @@ public class ResultMap {
       resultMap.constructorResultMappings = new ArrayList<>();
       resultMap.propertyResultMappings = new ArrayList<>();
       final List<String> constructorArgNames = new ArrayList<>();
+      // 遍历 resultMappings
       for (ResultMapping resultMapping : resultMap.resultMappings) {
+        // 是否存在嵌套查询
         resultMap.hasNestedQueries = resultMap.hasNestedQueries || resultMapping.getNestedQueryId() != null;
+        // 是否存在嵌套的结果
         resultMap.hasNestedResultMaps = resultMap.hasNestedResultMaps || (resultMapping.getNestedResultMapId() != null && resultMapping.getResultSet() == null);
+        // 获取列名
         final String column = resultMapping.getColumn();
         if (column != null) {
+          // 列名转大写添加到 mappedColumns 结果集中
           resultMap.mappedColumns.add(column.toUpperCase(Locale.ENGLISH));
         } else if (resultMapping.isCompositeResult()) {
           for (ResultMapping compositeResultMapping : resultMapping.getComposites()) {
@@ -103,6 +121,7 @@ public class ResultMap {
             }
           }
         }
+        // 获取列映射对应的属性
         final String property = resultMapping.getProperty();
         if(property != null) {
           resultMap.mappedProperties.add(property);
@@ -145,14 +164,24 @@ public class ResultMap {
       return resultMap;
     }
 
+    /**
+     * 校验
+     * @param constructorArgNames
+     * @return
+     */
     private List<String> argNamesOfMatchingConstructor(List<String> constructorArgNames) {
+      // 获取声明的构造方法
       Constructor<?>[] constructors = resultMap.type.getDeclaredConstructors();
+      // 遍历每个构造方法
       for (Constructor<?> constructor : constructors) {
+        // 获取构造方法的参数类型
         Class<?>[] paramTypes = constructor.getParameterTypes();
+        // 参数长度和获取到参数类型数量一致
         if (constructorArgNames.size() == paramTypes.length) {
+          // 获取构造函数的参数名称
           List<String> paramNames = getArgNames(constructor);
           if (constructorArgNames.containsAll(paramNames)
-              && argTypesMatch(constructorArgNames, paramTypes, paramNames)) {
+                  && argTypesMatch(constructorArgNames, paramTypes, paramNames)) {
             return paramNames;
           }
         }
@@ -160,6 +189,13 @@ public class ResultMap {
       return null;
     }
 
+    /**
+     * 用来检查构造方法参数类型是否匹配
+     * @param constructorArgNames 参数名称列表
+     * @param paramTypes  参数类型
+     * @param paramNames 参数名
+     * @return 
+     */
     private boolean argTypesMatch(final List<String> constructorArgNames,
         Class<?>[] paramTypes, List<String> paramNames) {
       for (int i = 0; i < constructorArgNames.size(); i++) {
@@ -179,9 +215,11 @@ public class ResultMap {
       return true;
     }
 
+    // 获取构造函数的参数名
     private List<String> getArgNames(Constructor<?> constructor) {
       List<String> paramNames = new ArrayList<>();
       List<String> actualParamNames = null;
+      // 获取参数的注解
       final Annotation[][] paramAnnotations = constructor.getParameterAnnotations();
       int paramCount = paramAnnotations.length;
       for (int paramIndex = 0; paramIndex < paramCount; paramIndex++) {

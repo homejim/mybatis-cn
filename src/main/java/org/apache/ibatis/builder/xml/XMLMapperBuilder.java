@@ -455,6 +455,7 @@ public class XMLMapperBuilder extends BaseBuilder {
         || "collection".equals(context.getName())
         || "case".equals(context.getName())) {
       if (context.getStringAttribute("select") == null) {
+        // 会先将嵌套的结果集进行处理， 添加到 Configuration 中
         ResultMap resultMap = resultMapElement(context, resultMappings);
         return resultMap.getId();
       }
