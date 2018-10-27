@@ -136,6 +136,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       boolean readWrite,
       boolean blocking,
       Properties props) {
+    // 建造者模式
     Cache cache = new CacheBuilder(currentNamespace)
         .implementation(valueOrDefault(typeClass, PerpetualCache.class))
         .addDecorator(valueOrDefault(evictionClass, LruCache.class))
@@ -145,7 +146,9 @@ public class MapperBuilderAssistant extends BaseBuilder {
         .blocking(blocking)
         .properties(props)
         .build();
+    // 将对象添加到 configuration 中
     configuration.addCache(cache);
+    // 给当前命名空间的缓存成员变量赋值
     currentCache = cache;
     return cache;
   }

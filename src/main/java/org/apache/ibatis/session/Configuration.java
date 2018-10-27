@@ -868,32 +868,42 @@ public class Configuration {
 
     @SuppressWarnings("unchecked")
     public V put(String key, V value) {
+      // 是否存在 key， 存在则直接报异常
       if (containsKey(key)) {
         throw new IllegalArgumentException(name + " already contains value for " + key);
       }
+      // 获取 shortKey
       if (key.contains(".")) {
+        // 将 key 以 . 分割， 并获取最后一项作为 shortKey
         final String shortKey = getShortName(key);
         if (super.get(shortKey) == null) {
+          // 如果 shorKey 对应在 Map 中没有值， 则放入
           super.put(shortKey, value);
         } else {
+          // 如果 shorKey 对应在 Map 中有值， 则放入一个 Ambiguity 类
           super.put(shortKey, (V) new Ambiguity(shortKey));
         }
       }
+      // key 也会放一个 value
       return super.put(key, value);
     }
 
     public V get(Object key) {
+      // value 为空则报错
       V value = super.get(key);
       if (value == null) {
         throw new IllegalArgumentException(name + " does not contain value for " + key);
       }
+      // 二义性也报错
       if (value instanceof Ambiguity) {
         throw new IllegalArgumentException(((Ambiguity) value).getSubject() + " is ambiguous in " + name
-            + " (try using the full name including the namespace, or rename one of the entries)");
+                + " (try using the full name including the namespace, or rename one of the entries)");
       }
+      // 正常情况下应该是返回
       return value;
     }
 
+    // 将 key 以 . 分割， 并获取最后一项作为 shortKey
     private String getShortName(String key) {
       final String[] keyParts = key.split("\\.");
       return keyParts[keyParts.length - 1];

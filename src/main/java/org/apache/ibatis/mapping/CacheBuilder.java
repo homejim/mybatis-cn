@@ -89,18 +89,28 @@ public class CacheBuilder {
     return this;
   }
 
+  /**
+   * 通过建造者模式创建 Cache 对象
+   * @return
+   */
   public Cache build() {
+    // 设置默认的实现， type 和 lru 对应的类不为空
     setDefaultImplementations();
+    // 通过反射创建对象
     Cache cache = newBaseCacheInstance(implementation, id);
+    // 根据<cache>节点的子节点<property>, 初始化Cache对象
     setCacheProperties(cache);
     // issue #352, do not apply decorators to custom caches
+    // 如果是PerpetualCache类型， 使用 decorators 中的装饰器来包装cache, 并设置属性
     if (PerpetualCache.class.equals(cache.getClass())) {
       for (Class<? extends Cache> decorator : decorators) {
         cache = newCacheDecoratorInstance(decorator, cache);
         setCacheProperties(cache);
       }
+      // mybatis 自己提供的标准装饰器
       cache = setStandardDecorators(cache);
     } else if (!LoggingCache.class.isAssignableFrom(cache.getClass())) {
+      // 如果不是 LoggingCache 子类， 则添加 LoggingCache 装饰器
       cache = new LoggingCache(cache);
     }
     return cache;
