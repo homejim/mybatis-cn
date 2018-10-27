@@ -399,6 +399,11 @@ public class XMLMapperBuilder extends BaseBuilder {
     return builderAssistant.buildDiscriminator(resultType, column, javaTypeClass, jdbcTypeEnum, typeHandlerClass, discriminatorMap);
   }
 
+    /**
+     * 解析 <sql> 节点
+     * @param list
+     * @throws Exception
+     */
   private void sqlElement(List<XNode> list) throws Exception {
     if (configuration.getDatabaseId() != null) {
       sqlElement(list, configuration.getDatabaseId());
@@ -406,16 +411,30 @@ public class XMLMapperBuilder extends BaseBuilder {
     sqlElement(list, null);
   }
 
-  private void sqlElement(List<XNode> list, String requiredDatabaseId) throws Exception {
-    for (XNode context : list) {
-      String databaseId = context.getStringAttribute("databaseId");
-      String id = context.getStringAttribute("id");
-      id = builderAssistant.applyCurrentNamespace(id, false);
-      if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) {
-        sqlFragments.put(id, context);
-      }
+    /**
+     * 解析 <sql> 节点
+     *
+     * @param list
+     * @param requiredDatabaseId
+     * @throws Exception
+     */
+    private void sqlElement(List<XNode> list, String requiredDatabaseId) throws Exception {
+        // 遍历 <sql> 节点
+        for (XNode context : list) {
+            // 获取 databaseId 属性
+            String databaseId = context.getStringAttribute("databaseId");
+            // 获取 id 属性
+            String id = context.getStringAttribute("id");
+            // 为 id 添加命名空间
+            id = builderAssistant.applyCurrentNamespace(id, false);
+            // 检查 sql 节点的 databaseId 与当前 Configuration 中的是否一致
+            if (databaseIdMatchesCurrent(id, databaseId, requiredDatabaseId)) {
+                // 记录到 XMLMapperBuider.sqlFragments(Map<String, XNode>)中保存
+                // 其最终是指向了 Configuration.sqlFragments(configuration.getSqlFragments) 集合
+                sqlFragments.put(id, context);
+            }
+        }
     }
-  }
   
   private boolean databaseIdMatchesCurrent(String id, String databaseId, String requiredDatabaseId) {
     if (requiredDatabaseId != null) {
