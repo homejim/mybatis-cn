@@ -22,7 +22,7 @@ package org.apache.ibatis.mapping;
  * @author Clinton Begin
  */
 public interface SqlSource {
-
+  // 通过解析得到 BoundSql 对象， BoundSql 中封装了包含 “？”的占位符的SQL， 以及绑定的参数
   BoundSql getBoundSql(Object parameterObject);
 
 }
