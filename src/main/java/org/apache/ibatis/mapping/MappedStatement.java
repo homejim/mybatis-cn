@@ -37,15 +37,15 @@ public final class MappedStatement {
   private Configuration configuration;
   private String id;
   private Integer fetchSize;
-  private Integer timeout;
+  private Integer timeout;//SQL超时时间
   private StatementType statementType;
   private ResultSetType resultSetType;
-  private SqlSource sqlSource;
-  private Cache cache;
-  private ParameterMap parameterMap;
-  private List<ResultMap> resultMaps;
-  private boolean flushCacheRequired;
-  private boolean useCache;
+  private SqlSource sqlSource;// SqlSource 对象， 对应一条 SQL
+  private Cache cache;// 缓存
+  private ParameterMap parameterMap;// 参数
+  private List<ResultMap> resultMaps;// 结果集
+  private boolean flushCacheRequired;// 刷新缓存
+  private boolean useCache;// 是否使用缓存
   private boolean resultOrdered;
   private SqlCommandType sqlCommandType;
   private KeyGenerator keyGenerator;

@@ -149,11 +149,15 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
+    // 遍历 XNode 节点
     for (XNode context : list) {
+      // 建造者模式
       final XMLStatementBuilder statementParser = new XMLStatementBuilder(configuration, builderAssistant, context, requiredDatabaseId);
       try {
+        // 解析
         statementParser.parseStatementNode();
       } catch (IncompleteElementException e) {
+        // 无法解析的添加到 Configuration 对象
         configuration.addIncompleteStatement(statementParser);
       }
     }
@@ -517,21 +521,29 @@ public class XMLMapperBuilder extends BaseBuilder {
     return null;
   }
 
+  /**
+   * 映射文件与对应 Mapper 的绑定
+   */
   private void bindMapperForNamespace() {
+    // 获取映射文件的 namespace
     String namespace = builderAssistant.getCurrentNamespace();
     if (namespace != null) {
       Class<?> boundType = null;
       try {
+        // 解析 namespace 对应的类型
         boundType = Resources.classForName(namespace);
       } catch (ClassNotFoundException e) {
-        //ignore, bound type is not required
+        //不做处理， 对应的类型不存在也没关系
       }
+      // 存在对应的类型， 才做处理
       if (boundType != null) {
-        if (!configuration.hasMapper(boundType)) {
+        if (!configuration.hasMapper(boundType)) { // 是否已经加载了 boundType 接口
           // Spring may not know the real resource name so we set a flag
           // to prevent loading again this resource from the mapper interface
           // look at MapperAnnotationBuilder#loadXmlResource
+          // 追加namespace 作为前缀， 并添加到 Configuration 对象的 loadedResources 中
           configuration.addLoadedResource("namespace:" + namespace);
+          // 注册Mapper到mapperRegistry中
           configuration.addMapper(boundType);
         }
       }

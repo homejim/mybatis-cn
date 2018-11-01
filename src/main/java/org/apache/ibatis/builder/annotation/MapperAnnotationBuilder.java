@@ -122,26 +122,38 @@ public class MapperAnnotationBuilder {
     this.type = type;
   }
 
+  /**
+   * 解析 Mapper 接口中的信息
+   */
   public void parse() {
     String resource = type.toString();
+    // 检查是否已经加载过该接口了
     if (!configuration.isResourceLoaded(resource)) {
+      // 加载 XML 资源
       loadXmlResource();
+      // 添加到 Configuration 中， 表示已经加载过了
       configuration.addLoadedResource(resource);
       assistant.setCurrentNamespace(type.getName());
+      // 解析 @CacheNamespace 注解
       parseCache();
+      // 解析 @CacheNamespaceRef 注解
       parseCacheRef();
       Method[] methods = type.getMethods();
       for (Method method : methods) {
         try {
           // issue #237
           if (!method.isBridge()) {
+            // 解析 @SelectKey, @ResultMap 等注解， 并创建对象
             parseStatement(method);
           }
         } catch (IncompleteElementException e) {
+          // 如果解析过程中出现 IncompleteElementException 异常， 可能是引用了未解析的注解
+          // 添加到 Configuration 的 incompleteMethods 中
           configuration.addIncompleteMethod(new MethodResolver(this, method));
         }
       }
     }
+    // 遍历 Configuration.incompleteMethods 中的所有方法， 并进行解析
     parsePendingMethods();
   }
 
@@ -160,6 +172,9 @@ public class MapperAnnotationBuilder {
     }
   }
 
+  /**
+   * 加载 xml 资源
+   */
   private void loadXmlResource() {
     // Spring may not know the real resource name so we check a flag
     // to prevent loading again a resource twice

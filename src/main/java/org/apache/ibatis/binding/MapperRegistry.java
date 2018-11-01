@@ -57,18 +57,26 @@ public class MapperRegistry {
     return knownMappers.containsKey(type);
   }
 
+  /**
+   * 注册 Mapper 接口
+   *
+   * @param type 接口类型
+   * @param <T>  对应的类型
+   */
   public <T> void addMapper(Class<T> type) {
+    // 必须是接口
     if (type.isInterface()) {
-      if (hasMapper(type)) {
+      if (hasMapper(type)) { // 只能注册一次
         throw new BindingException("Type " + type + " is already known to the MapperRegistry.");
       }
       boolean loadCompleted = false;
       try {
+        // 以type作为key
         knownMappers.put(type, new MapperProxyFactory<T>(type));
-        // It's important that the type is added before the parser is run
-        // otherwise the binding may automatically be attempted by the
-        // mapper parser. If the type is already known, it won't try.
+        // 最好在解析器运行之前添加类型， 否则解析器的绑定会由mapper解析器自动尝试进行。
+        // 如果类型已知， 则不会尝试
         MapperAnnotationBuilder parser = new MapperAnnotationBuilder(config, type);
+        // 解析
         parser.parse();
         loadCompleted = true;
       } finally {
