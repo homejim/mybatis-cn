@@ -163,12 +163,18 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 解析未解析成功的 ResultMap
+   */
   private void parsePendingResultMaps() {
+    // 获取 Configuration.incompleteResultMaps 集合
     Collection<ResultMapResolver> incompleteResultMaps = configuration.getIncompleteResultMaps();
     synchronized (incompleteResultMaps) {
+      // 迭代器遍历
       Iterator<ResultMapResolver> iter = incompleteResultMaps.iterator();
       while (iter.hasNext()) {
         try {
+          // 重新解析
           iter.next().resolve();
           iter.remove();
         } catch (IncompleteElementException e) {
@@ -178,31 +184,42 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   * 处理解析未成功的 CacheRef
+   */
   private void parsePendingCacheRefs() {
+    // 获取 Configuration.mappedStatements 集合
     Collection<CacheRefResolver> incompleteCacheRefs = configuration.getIncompleteCacheRefs();
     synchronized (incompleteCacheRefs) {
+      // 迭代器遍历
       Iterator<CacheRefResolver> iter = incompleteCacheRefs.iterator();
       while (iter.hasNext()) {
         try {
+          // 重新解析
           iter.next().resolveCacheRef();
           iter.remove();
         } catch (IncompleteElementException e) {
-          // Cache ref is still missing a resource...
+          // 还是无法解析就不管了
         }
       }
     }
   }
 
+  /**
+   * 处理未解析成功的 statements
+   */
   private void parsePendingStatements() {
+    // 获取 Configuration.incompleteStatements 集合
     Collection<XMLStatementBuilder> incompleteStatements = configuration.getIncompleteStatements();
-    synchronized (incompleteStatements) {
+    synchronized (incompleteStatements) {//加锁
+      // 迭代器进行遍历
       Iterator<XMLStatementBuilder> iter = incompleteStatements.iterator();
       while (iter.hasNext()) {
         try {
-          iter.next().parseStatementNode();
-          iter.remove();
+          iter.next().parseStatementNode();//重新解析
+          iter.remove();// 移除
         } catch (IncompleteElementException e) {
-          // Statement is still missing a resource...
+          // 还是无法解析就不管了
         }
       }
     }
