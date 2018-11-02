@@ -28,16 +28,25 @@ import org.apache.ibatis.builder.BuilderException;
  */
 public class ExpressionEvaluator {
 
-  public boolean evaluateBoolean(String expression, Object parameterObject) {
-    Object value = OgnlCache.getValue(expression, parameterObject);
-    if (value instanceof Boolean) {
-      return (Boolean) value;
+    /**
+     * @param expression      传入的表达式
+     * @param parameterObject 参数
+     * @return
+     */
+    public boolean evaluateBoolean(String expression, Object parameterObject) {
+        // ognl 解析表达式的值
+        Object value = OgnlCache.getValue(expression, parameterObject);
+        // 值是 Boolean 类型， 则直接返回
+        if (value instanceof Boolean) {
+            return (Boolean) value;
+        }
+        // 值是数字类型， 则通过 BigDecimal 转， 并于0对比
+        if (value instanceof Number) {
+            return new BigDecimal(String.valueOf(value)).compareTo(BigDecimal.ZERO) != 0;
+        }
+        // 值不为空
+        return value != null;
     }
-    if (value instanceof Number) {
-      return new BigDecimal(String.valueOf(value)).compareTo(BigDecimal.ZERO) != 0;
-    }
-    return value != null;
-  }
 
   public Iterable<?> evaluateIterable(String expression, Object parameterObject) {
     Object value = OgnlCache.getValue(expression, parameterObject);

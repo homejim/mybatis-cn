@@ -19,19 +19,30 @@ package org.apache.ibatis.scripting.xmltags;
  * @author Clinton Begin
  */
 public class IfSqlNode implements SqlNode {
+  // ExpressionEvaluator 解析 <if> 节点的 test表达式
   private final ExpressionEvaluator evaluator;
+  // test 表达式
   private final String test;
+  // 记录 <if> 节点的子节点
   private final SqlNode contents;
 
+  /**
+   *  构造函数
+   * @param contents
+   * @param test
+   */
   public IfSqlNode(SqlNode contents, String test) {
     this.test = test;
     this.contents = contents;
     this.evaluator = new ExpressionEvaluator();
   }
 
+
   @Override
   public boolean apply(DynamicContext context) {
+    // 检测表达式是否为 true
     if (evaluator.evaluateBoolean(test, context.getBindings())) {
+      // 调用子节点的 apply 方法
       contents.apply(context);
       return true;
     }
