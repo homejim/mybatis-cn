@@ -23,7 +23,7 @@ import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
 
 /**
- * @author Clinton Begin
+ * 文本节点
  */
 public class TextSqlNode implements SqlNode {
   private final String text;
@@ -39,23 +39,41 @@ public class TextSqlNode implements SqlNode {
   }
   
   public boolean isDynamic() {
+
     DynamicCheckerTokenParser checker = new DynamicCheckerTokenParser();
     GenericTokenParser parser = createParser(checker);
     parser.parse(text);
     return checker.isDynamic();
   }
 
+  /**
+   * 实际参数替换
+   *
+   * @param context
+   * @return
+   */
   @Override
   public boolean apply(DynamicContext context) {
+    // GenericTokenParser 解析器是通用标记解析器， 具体可以参考我的博客
     GenericTokenParser parser = createParser(new BindingTokenParser(context, injectionFilter));
+    // 解析 text， 并添加到 DynamicContext 对象中
     context.appendSql(parser.parse(text));
     return true;
   }
-  
+
+  /**
+   * 创建通用标记解析器
+   * @param handler
+   * @return
+   */
   private GenericTokenParser createParser(TokenHandler handler) {
+  // 解析的是 ${} 的内容
     return new GenericTokenParser("${", "}", handler);
   }
 
+  /**
+   *  绑定记号解析器
+   */
   private static class BindingTokenParser implements TokenHandler {
 
     private DynamicContext context;
@@ -66,16 +84,25 @@ public class TextSqlNode implements SqlNode {
       this.injectionFilter = injectionFilter;
     }
 
+    /**
+     * 符号处理器
+     *
+     * @param content
+     * @return
+     */
     @Override
     public String handleToken(String content) {
+      // 获取用户传入的实际参数， 不过用的竟然不是 DynamicContext.PARAMETER_OBJECT_KEY 变量， 有点奇怪
       Object parameter = context.getBindings().get("_parameter");
       if (parameter == null) {
         context.getBindings().put("value", null);
       } else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
         context.getBindings().put("value", parameter);
       }
+      // 通过 ognl 解析 content 的值
       Object value = OgnlCache.getValue(content, context.getBindings());
       String srtValue = (value == null ? "" : String.valueOf(value)); // issue #274 return "" instead of "null"
+      // 检查合法性
       checkInjection(srtValue);
       return srtValue;
     }
@@ -86,7 +113,10 @@ public class TextSqlNode implements SqlNode {
       }
     }
   }
-  
+
+  /**
+   * 内部类， 实现了 TokenHandler
+   */
   private static class DynamicCheckerTokenParser implements TokenHandler {
 
     private boolean isDynamic;
@@ -99,6 +129,10 @@ public class TextSqlNode implements SqlNode {
       return isDynamic;
     }
 
+    /**
+     * 参数都没用到， 就是设定为是动态SQL
+     * @return
+     */
     @Override
     public String handleToken(String content) {
       this.isDynamic = true;
