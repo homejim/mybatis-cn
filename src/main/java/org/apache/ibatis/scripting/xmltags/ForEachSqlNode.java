@@ -26,13 +26,21 @@ import org.apache.ibatis.session.Configuration;
 public class ForEachSqlNode implements SqlNode {
   public static final String ITEM_PREFIX = "__frch_";
 
+  // 用于判断循环的终止条件
   private final ExpressionEvaluator evaluator;
+  // 迭代的集合表达式
   private final String collectionExpression;
+  // 子节点
   private final SqlNode contents;
+  // 循环开始前添加的字符串
   private final String open;
+  // 循环机结束后添加的字符串
   private final String close;
+  // 循环每项之间的分隔符
   private final String separator;
+  // item 是本次迭代的元素
   private final String item;
+  // 当前的迭代次数
   private final String index;
   private final Configuration configuration;
 
@@ -50,21 +58,27 @@ public class ForEachSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    // 获取参数信息
     Map<String, Object> bindings = context.getBindings();
+
     final Iterable<?> iterable = evaluator.evaluateIterable(collectionExpression, bindings);
     if (!iterable.iterator().hasNext()) {
       return true;
     }
     boolean first = true;
+    // 添加字段
     applyOpen(context);
     int i = 0;
+    // 遍历
     for (Object o : iterable) {
       DynamicContext oldContext = context;
+      // 如果是第一次， 则使用 PrefixedContext 对象对 context 进行封装
       if (first || separator == null) {
         context = new PrefixedContext(context, "");
       } else {
         context = new PrefixedContext(context, separator);
       }
+      // 从 0 开始， 每次自增1
       int uniqueNumber = context.getUniqueNumber();
       // Issue #709 
       if (o instanceof Map.Entry) {
@@ -76,6 +90,7 @@ public class ForEachSqlNode implements SqlNode {
         applyIndex(context, i, uniqueNumber);
         applyItem(context, o, uniqueNumber);
       }
+      // 调用子节点的 apply() 方法处理
       contents.apply(new FilteredDynamicContext(configuration, context, index, item, uniqueNumber));
       if (first) {
         first = !((PrefixedContext) context).isPrefixApplied();
@@ -90,19 +105,27 @@ public class ForEachSqlNode implements SqlNode {
   }
 
   private void applyIndex(DynamicContext context, Object o, int i) {
-    if (index != null) {
-      context.bind(index, o);
-      context.bind(itemizeItem(index, i), o);
-    }
+      if (index != null) {
+          // index->o
+          context.bind(index, o);
+          // __frch_index_i->o
+          context.bind(itemizeItem(index, i), o);
+      }
   }
 
   private void applyItem(DynamicContext context, Object o, int i) {
-    if (item != null) {
-      context.bind(item, o);
-      context.bind(itemizeItem(item, i), o);
-    }
+      if (item != null) {
+          // item->o
+          context.bind(item, o);
+          // __frch_item_i->o
+          context.bind(itemizeItem(item, i), o);
+      }
   }
 
+  /**
+   * 添加 open 到 context 中
+   * @param context
+   */
   private void applyOpen(DynamicContext context) {
     if (open != null) {
       context.appendSql(open);
@@ -115,17 +138,28 @@ public class ForEachSqlNode implements SqlNode {
     }
   }
 
+  /**
+   * item 替换成 __frch_item_i
+   * @return
+   */
   private static String itemizeItem(String item, int i) {
     return ITEM_PREFIX + item + "_" + i;
   }
 
+  /**
+   * 处理 #{} 占位符的类
+   */
   private static class FilteredDynamicContext extends DynamicContext {
+    // 代理的 DynamicContext 对象
     private final DynamicContext delegate;
+    // 对应的集合项在集合中的位置
     private final int index;
+    // 对应集合项的 index
     private final String itemIndex;
+    // 对应集合项的 item
     private final String item;
 
-    public FilteredDynamicContext(Configuration configuration,DynamicContext delegate, String itemIndex, String item, int i) {
+    public FilteredDynamicContext(Configuration configuration, DynamicContext delegate, String itemIndex, String item, int i) {
       super(configuration, null);
       this.delegate = delegate;
       this.index = i;
@@ -150,7 +184,9 @@ public class ForEachSqlNode implements SqlNode {
 
     @Override
     public void appendSql(String sql) {
+      // 处理的是 #{xxx} 的内容， TokenHandler 是匿名内部类
       GenericTokenParser parser = new GenericTokenParser("#{", "}", content -> {
+        // 对传入的content进行处理， 正则表达式
         String newContent = content.replaceFirst("^\\s*" + item + "(?![^.,:\\s])", itemizeItem(item, index));
         if (itemIndex != null && newContent.equals(content)) {
           newContent = content.replaceFirst("^\\s*" + itemIndex + "(?![^.,:\\s])", itemizeItem(itemIndex, index));
@@ -169,9 +205,15 @@ public class ForEachSqlNode implements SqlNode {
   }
 
 
+  /**
+   *
+   */
   private class PrefixedContext extends DynamicContext {
+    // 代理 DynamicContext 对象
     private final DynamicContext delegate;
+    // 指定的前缀
     private final String prefix;
+    // 指定的后缀
     private boolean prefixApplied;
 
     public PrefixedContext(DynamicContext delegate, String prefix) {
@@ -195,12 +237,20 @@ public class ForEachSqlNode implements SqlNode {
       delegate.bind(name, value);
     }
 
+    /**
+     * 追加指定的前缀 prefix 到 delegate 中， 再追加 sql 语句
+     * @param sql
+     */
     @Override
     public void appendSql(String sql) {
+      // 判断是否需要追加前缀
       if (!prefixApplied && sql != null && sql.trim().length() > 0) {
+        // 追加前缀
         delegate.appendSql(prefix);
+        // 表示已经追加过
         prefixApplied = true;
       }
+      // 追加 sql 语句
       delegate.appendSql(sql);
     }
 
