@@ -24,6 +24,11 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * {@link SqlSource}处理完动态内容之后， 会生产实际的 SQL 语句 ，
+ * 该语句中可能有占位符"?" 和 有序的参数映射，以及传入的参数
+ */
+
+/**
  * An actual SQL String got from an {@link SqlSource} after having processed any dynamic content.
  * The SQL may have SQL placeholders "?" and an list (ordered) of an parameter mappings 
  * with the additional information for each parameter (at least the property name of the input object to read 
@@ -35,11 +40,15 @@ import org.apache.ibatis.session.Configuration;
  */
 public class BoundSql {
 
+  // 进行 #{ } 和 ${ } 替换完毕之后的结果sql, 注意每个 #{ }替换完之后就是一个 ?
   private final String sql;
+  // 参数映射列表， 与 sql 中的占位符有序， 一一对应
   private final List<ParameterMapping> parameterMappings;
+  // 用户传入的参数
   private final Object parameterObject;
   private final Map<String, Object> additionalParameters;
   private final MetaObject metaParameters;
+
 
   public BoundSql(Configuration configuration, String sql, List<ParameterMapping> parameterMappings, Object parameterObject) {
     this.sql = sql;
