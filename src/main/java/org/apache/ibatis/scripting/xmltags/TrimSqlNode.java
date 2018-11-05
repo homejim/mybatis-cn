@@ -151,8 +151,8 @@ public class TrimSqlNode implements SqlNode {
     }
 
     /**
-     * 处理前缀
-     *
+     * prefix: 当 trim 元素包含有内容时， 增加 prefix 所指定的前缀
+     * 因为只是增加一次， 因此需要使用 prefixApplied 来进行标记， 表示是否已经增加过了
      * @param sql sql 语句
      * @param trimmedUppercaseSql
      */
