@@ -12,6 +12,7 @@ MyBatis 是一款优秀的支持自定义 SQL 查询、存储过程和高级映�
 - [mybatis-高级结果映射之一对一](https://www.cnblogs.com/homejim/p/9785802.html)： 来试试高级映射功能
 - [mybatis-高级结果映射之一对多](https://www.cnblogs.com/homejim/p/9808847.html)： 一对多的高级映射
 - [mybatis 缓存的使用， 看这篇就够了](https://www.cnblogs.com/homejim/p/9729191.html)： 一级缓存， 二级缓存， 提升性能的同时， 也注意它的限制
+- [MyBatis动态SQL](https://www.cnblogs.com/homejim/p/9909657.html)：我再也不要再代码中拼接语句了！！ 来用 mybatis 动态 SQL 爽一爽吧
 - 未完待续...
 ## 相关设计模式
 - [Java设计模式-建造者(Builder)模式](https://www.cnblogs.com/homejim/p/9644182.html)： mybatis 使用频率很高的设计模式。 尤其是解析相关
