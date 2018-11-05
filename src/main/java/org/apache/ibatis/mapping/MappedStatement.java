@@ -29,28 +29,41 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * 表示一个 SQL 节点（SELECT \ UPDATE \ DELETE \ INSERT）
  */
 public final class MappedStatement {
 
   private String resource;
   private Configuration configuration;
+  //节点中的id属性加要命名空间
   private String id;
   private Integer fetchSize;
-  private Integer timeout;//SQL超时时间
+  //SQL超时时间
+  private Integer timeout;
+  // Statement的类型，STATEMENT/PREPARE/CALLABLE-对应SQL执行的几种方式
   private StatementType statementType;
+  // 结果集类型， 是一个枚举类型
   private ResultSetType resultSetType;
-  private SqlSource sqlSource;// SqlSource 对象， 对应一条 SQL
-  private Cache cache;// 缓存
-  private ParameterMap parameterMap;// 参数
-  private List<ResultMap> resultMaps;// 结果集
-  private boolean flushCacheRequired;// 刷新缓存
-  private boolean useCache;// 是否使用缓存
+  // SqlSource 对象， 对应一条 SQL
+  private SqlSource sqlSource;
+  // 缓存
+  private Cache cache;
+  // 参数
+  private ParameterMap parameterMap;
+  // 结果集
+  private List<ResultMap> resultMaps;
+  // 刷新缓存
+  private boolean flushCacheRequired;
+  // 是否使用缓存
+  private boolean useCache;
   private boolean resultOrdered;
   private SqlCommandType sqlCommandType;
+  //和SELECTKEY标签有关
   private KeyGenerator keyGenerator;
   private String[] keyProperties;
   private String[] keyColumns;
+
+  // 是否有嵌套的结果集
   private boolean hasNestedResultMaps;
   private String databaseId;
   private Log statementLog;
@@ -61,6 +74,9 @@ public final class MappedStatement {
     // constructor disabled
   }
 
+  /**
+   * 静态内部类， 又是建造者模式
+   */
   public static class Builder {
     private MappedStatement mappedStatement = new MappedStatement();
 
@@ -290,13 +306,17 @@ public final class MappedStatement {
   }
   
   public BoundSql getBoundSql(Object parameterObject) {
+    // 获取 BoundSql 对象
     BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
+    // 获取 parameterMappings 列表
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+    // 校验当前的sql语句有无绑定parameterMapping属性
     if (parameterMappings == null || parameterMappings.isEmpty()) {
       boundSql = new BoundSql(configuration, boundSql.getSql(), parameterMap.getParameterMappings(), parameterObject);
     }
 
     // check for nested result maps in parameter mappings (issue #30)
+    //
     for (ParameterMapping pm : boundSql.getParameterMappings()) {
       String rmId = pm.getResultMapId();
       if (rmId != null) {

@@ -141,6 +141,10 @@ public class XMLMapperBuilder extends BaseBuilder {
     }
   }
 
+  /**
+   *
+   * @param list
+   */
   private void buildStatementFromContext(List<XNode> list) {
     if (configuration.getDatabaseId() != null) {
       buildStatementFromContext(list, configuration.getDatabaseId());
@@ -148,6 +152,11 @@ public class XMLMapperBuilder extends BaseBuilder {
     buildStatementFromContext(list, null);
   }
 
+  /**
+   * 解析各个 SQL 语句
+   * @param list
+   * @param requiredDatabaseId
+   */
   private void buildStatementFromContext(List<XNode> list, String requiredDatabaseId) {
     // 遍历 XNode 节点
     for (XNode context : list) {
