@@ -21,7 +21,14 @@ import org.apache.ibatis.parsing.GenericTokenParser;
 import org.apache.ibatis.session.Configuration;
 
 /**
- * @author Clinton Begin
+ * foreach 中有以下几个属性
+ *
+ *     collection: 必填， 集合/数组/Map的名称.
+ *     item: 变量名。 即从迭代的对象中取出的每一个值
+ *     index: 索引的属性名。 当迭代的对象为 Map 时， 该值为 Map 中的 Key.
+ *     open: 循环开头的字符串
+ *     close: 循环结束的字符串
+ *     separator: 每次循环的分隔符
  */
 public class ForEachSqlNode implements SqlNode {
   public static final String ITEM_PREFIX = "__frch_";
@@ -98,7 +105,9 @@ public class ForEachSqlNode implements SqlNode {
       context = oldContext;
       i++;
     }
+    // 添加结束字符
     applyClose(context);
+    // 已经遍历完成， 移除 item index
     context.getBindings().remove(item);
     context.getBindings().remove(index);
     return true;
@@ -132,6 +141,10 @@ public class ForEachSqlNode implements SqlNode {
     }
   }
 
+  /**
+   * 添加结束标记到 sql 中
+   * @param context
+   */
   private void applyClose(DynamicContext context) {
     if (close != null) {
       context.appendSql(close);
