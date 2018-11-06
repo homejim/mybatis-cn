@@ -31,7 +31,8 @@ import java.util.TreeSet;
 import org.apache.ibatis.reflection.ReflectionException;
 
 /**
- * @author Clinton Begin
+ * MyBatis 中所提供的 DefaultObjectFactory 对象
+ * 通过该对象来创建对象
  */
 public class DefaultObjectFactory implements ObjectFactory, Serializable {
 
@@ -41,6 +42,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
   public <T> T create(Class<T> type) {
     return create(type, null, null);
   }
+
 
   @SuppressWarnings("unchecked")
   @Override
@@ -55,9 +57,15 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
     // no props for default
   }
 
+
+  /**
+   * 选择合适的构造函数实例化对象
+   *
+   */
   private  <T> T instantiateClass(Class<T> type, List<Class<?>> constructorArgTypes, List<Object> constructorArgs) {
     try {
       Constructor<T> constructor;
+      // 通过无参数的构造函数创建对象
       if (constructorArgTypes == null || constructorArgs == null) {
         constructor = type.getDeclaredConstructor();
         if (!constructor.isAccessible()) {
@@ -65,6 +73,7 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
         }
         return constructor.newInstance();
       }
+      // 通过指定的参数列表查找构造函数， 并实例化对象
       constructor = type.getDeclaredConstructor(constructorArgTypes.toArray(new Class[constructorArgTypes.size()]));
       if (!constructor.isAccessible()) {
         constructor.setAccessible(true);
@@ -91,6 +100,15 @@ public class DefaultObjectFactory implements ObjectFactory, Serializable {
     }
   }
 
+  /**
+   * 制定各种接口的实现类
+   * List->ArrayList
+   * Map->HashMap
+   * SortedSet->TreeSet
+   * Set->HashSet
+   * @param type
+   * @return
+   */
   protected Class<?> resolveInterface(Class<?> type) {
     Class<?> classToCreate;
     if (type == List.class || type == Collection.class || type == Iterable.class) {
