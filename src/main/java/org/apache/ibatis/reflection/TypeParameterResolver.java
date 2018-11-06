@@ -27,36 +27,52 @@ import java.util.Arrays;
 
 /**
  * @author Iwao AVE!
+ * 类型参数 Resolver
  */
 public class TypeParameterResolver {
 
   /**
+   *  解析字段的类型
+   *
    * @return The field type as {@link Type}. If it has type parameters in the declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveFieldType(Field field, Type srcType) {
+    // 获取字段声明的类型
     Type fieldType = field.getGenericType();
+    // 获取字段所在的类的 Class 对象
     Class<?> declaringClass = field.getDeclaringClass();
+    // 调用 resolveType 返回对应的类型
     return resolveType(fieldType, srcType, declaringClass);
   }
 
   /**
+   * 解析返回值的类型
+   *
    * @return The return type of the method as {@link Type}. If it has type parameters in the declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type resolveReturnType(Method method, Type srcType) {
+    // 获取方法返回类型
     Type returnType = method.getGenericReturnType();
+    // 获取方法所在的类的 Class 对象
     Class<?> declaringClass = method.getDeclaringClass();
+    // 解析类型
     return resolveType(returnType, srcType, declaringClass);
   }
 
   /**
+   * 解析餐宿类型
+   *
    * @return The parameter types of the method as an array of {@link Type}s. If they have type parameters in the declaration,<br>
-   *         they will be resolved to the actual runtime {@link Type}s.
+   * they will be resolved to the actual runtime {@link Type}s.
    */
   public static Type[] resolveParamTypes(Method method, Type srcType) {
+    // 获取方法的所有参数
     Type[] paramTypes = method.getGenericParameterTypes();
+    // 获取方法所在的类的 Class 对象
     Class<?> declaringClass = method.getDeclaringClass();
+    // 遍历并解析类型
     Type[] result = new Type[paramTypes.length];
     for (int i = 0; i < paramTypes.length; i++) {
       result[i] = resolveType(paramTypes[i], srcType, declaringClass);
@@ -64,18 +80,32 @@ public class TypeParameterResolver {
     return result;
   }
 
+  /**
+   * 解析类型
+   *
+   * @param type           要解析的类型
+   * @param srcType        起始位置
+   * @param declaringClass Type 所在的类
+   * @return
+   */
   private static Type resolveType(Type type, Type srcType, Class<?> declaringClass) {
+    // 解析 TypeVariable 类型
     if (type instanceof TypeVariable) {
       return resolveTypeVar((TypeVariable<?>) type, srcType, declaringClass);
     } else if (type instanceof ParameterizedType) {
+      // 解析 ParameterizedType 类型
       return resolveParameterizedType((ParameterizedType) type, srcType, declaringClass);
     } else if (type instanceof GenericArrayType) {
+      // 解析 GenericArrayType 类型
       return resolveGenericArrayType((GenericArrayType) type, srcType, declaringClass);
     } else {
       return type;
     }
   }
 
+  /**
+   *
+   */
   private static Type resolveGenericArrayType(GenericArrayType genericArrayType, Type srcType, Class<?> declaringClass) {
     Type componentType = genericArrayType.getGenericComponentType();
     Type resolvedComponentType = null;
@@ -93,23 +123,36 @@ public class TypeParameterResolver {
     }
   }
 
+  /**
+   * ParameterizedType 类型解析
+   *
+   * @return
+   */
   private static ParameterizedType resolveParameterizedType(ParameterizedType parameterizedType, Type srcType, Class<?> declaringClass) {
+    // 获取原始的类型。 如 List<Strig> 则返回 String
     Class<?> rawType = (Class<?>) parameterizedType.getRawType();
+    // 获取实际的参数。 如 Map<String, Long> 则返回 String, Long 的类型
     Type[] typeArgs = parameterizedType.getActualTypeArguments();
     Type[] args = new Type[typeArgs.length];
+    // 遍历
     for (int i = 0; i < typeArgs.length; i++) {
+      // 对应的是类型变量
       if (typeArgs[i] instanceof TypeVariable) {
         args[i] = resolveTypeVar((TypeVariable<?>) typeArgs[i], srcType, declaringClass);
+        // 对应是 ParameterizedType 类型
       } else if (typeArgs[i] instanceof ParameterizedType) {
         args[i] = resolveParameterizedType((ParameterizedType) typeArgs[i], srcType, declaringClass);
+        // 对应是 WildcardType 类型
       } else if (typeArgs[i] instanceof WildcardType) {
         args[i] = resolveWildcardType((WildcardType) typeArgs[i], srcType, declaringClass);
       } else {
         args[i] = typeArgs[i];
       }
     }
+    // 返回内部类 ParameterizedTypeImpl（ParameterizedType的实现）
     return new ParameterizedTypeImpl(rawType, null, args);
   }
+
 
   private static Type resolveWildcardType(WildcardType wildcardType, Type srcType, Class<?> declaringClass) {
     Type[] lowerBounds = resolveWildcardTypeBounds(wildcardType.getLowerBounds(), srcType, declaringClass);
@@ -133,6 +176,9 @@ public class TypeParameterResolver {
     return result;
   }
 
+  /**
+   * 解析 TypeVariable 类型
+   */
   private static Type resolveTypeVar(TypeVariable<?> typeVar, Type srcType, Class<?> declaringClass) {
     Type result = null;
     Class<?> clazz = null;
