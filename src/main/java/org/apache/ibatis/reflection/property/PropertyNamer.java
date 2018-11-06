@@ -50,14 +50,17 @@ public final class PropertyNamer {
     return name;
   }
 
+  // 检测方法名是否对应属性名
   public static boolean isProperty(String name) {
     return name.startsWith("get") || name.startsWith("set") || name.startsWith("is");
   }
 
+  // 检测是否为 getter
   public static boolean isGetter(String name) {
     return name.startsWith("get") || name.startsWith("is");
   }
 
+  // 检测是否为 setter
   public static boolean isSetter(String name) {
     return name.startsWith("set");
   }
