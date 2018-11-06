@@ -266,12 +266,21 @@ public class Reflector {
     }
   }
 
+  /**
+   * 从两个 setter 中选择一个更适合的
+   * @param setter1
+   * @param setter2
+   * @param property
+   * @return
+   */
   private Method pickBetterSetter(Method setter1, Method setter2, String property) {
     if (setter1 == null) {
       return setter2;
     }
     Class<?> paramType1 = setter1.getParameterTypes()[0];
     Class<?> paramType2 = setter2.getParameterTypes()[0];
+    // paramType1 是 paramType2 的父类或接口。
+    // paramType1 与 paramType2同一个类或接口
     if (paramType1.isAssignableFrom(paramType2)) {
       return setter2;
     } else if (paramType2.isAssignableFrom(paramType1)) {
@@ -529,6 +538,11 @@ public class Reflector {
     return defaultConstructor != null;
   }
 
+  /**
+   * 根据属性名， 获取 setter Invoker
+   * @param propertyName 属性名
+   * @return Invoker
+   */
   public Invoker getSetInvoker(String propertyName) {
     Invoker method = setMethods.get(propertyName);
     if (method == null) {
@@ -537,6 +551,11 @@ public class Reflector {
     return method;
   }
 
+  /**
+   * 根据属性名， 获取 getter Invoker
+   * @param propertyName 属性名
+   * @return Invoker
+   */
   public Invoker getGetInvoker(String propertyName) {
     Invoker method = getMethods.get(propertyName);
     if (method == null) {
@@ -547,7 +566,7 @@ public class Reflector {
 
   /**
    * Gets the type for a property setter
-   *
+   * 获取 setter 的属性类型
    * @param propertyName - the name of the property
    * @return The Class of the property setter
    */
@@ -561,7 +580,7 @@ public class Reflector {
 
   /**
    * Gets the type for a property getter
-   *
+   * 获取 getter 的属性类型
    * @param propertyName - the name of the property
    * @return The Class of the property getter
    */
@@ -593,8 +612,8 @@ public class Reflector {
 
   /**
    * Check to see if a class has a writable property by name
-   *
-   * @param propertyName - the name of the property to check
+   * 根据名字查看类是否具有同名的可写属性
+   * @param propertyName - 需要检查的属性名
    * @return True if the object has a writable property by the name
    */
   public boolean hasSetter(String propertyName) {
@@ -603,7 +622,7 @@ public class Reflector {
 
   /**
    * Check to see if a class has a readable property by name
-   *
+   * 根据名字查看类是否具有同名的可读属性
    * @param propertyName - the name of the property to check
    * @return True if the object has a readable property by the name
    */
@@ -611,6 +630,11 @@ public class Reflector {
     return getMethods.keySet().contains(propertyName);
   }
 
+  /**
+   * 根据名称查找属性名
+   * @param name
+   * @return
+   */
   public String findPropertyName(String name) {
     return caseInsensitivePropertyMap.get(name.toUpperCase(Locale.ENGLISH));
   }
