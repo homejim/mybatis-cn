@@ -213,7 +213,9 @@ public class Reflector {
 
   private void addSetMethods(Class<?> cls) {
     Map<String, List<Method>> conflictingSetters = new HashMap<>();
+    // 获取类和其父类的所声明的所有方法
     Method[] methods = getClassMethods(cls);
+    // 按照 JavaBean 规范查找 setter 方法， 并记录到 conflictingSetters 中
     for (Method method : methods) {
       String name = method.getName();
       if (name.startsWith("set") && name.length() > 3) {
@@ -288,6 +290,11 @@ public class Reflector {
     }
   }
 
+  /**
+   * 将 Type 类型转化为制定的 Class
+   * @param src 需要转换的Type
+   * @return
+   */
   private Class<?> typeToClass(Type src) {
     Class<?> result = null;
     if (src instanceof Class) {
@@ -309,8 +316,16 @@ public class Reflector {
     return result;
   }
 
+  /**
+   * 处理类中所有的字段， 并将处理后的信息添加到对应的集合
+   * （setMethods, setTypes, getMethods, getTypes）
+   *
+   * @param clazz
+   */
   private void addFields(Class<?> clazz) {
+    // 获取所有生命的字段
     Field[] fields = clazz.getDeclaredFields();
+    // 遍历
     for (Field field : fields) {
       if (canControlMemberAccessible()) {
         try {
@@ -324,21 +339,31 @@ public class Reflector {
           // issue #379 - removed the check for final because JDK 1.5 allows
           // modification of final fields through reflection (JSR-133). (JGB)
           // pr #16 - final static can only be set by the classloader
+          // 获取字段的修饰符
           int modifiers = field.getModifiers();
+          // 过滤掉 final 和 static
           if (!(Modifier.isFinal(modifiers) && Modifier.isStatic(modifiers))) {
+            // 添加到 setMethods 和 setTypes 集合中
             addSetField(field);
           }
         }
+        // 当 getMethods 集合中不包含同名属性时
         if (!getMethods.containsKey(field.getName())) {
+          // 添加到 getMethods 和 getTypes 集合中
           addGetField(field);
         }
       }
     }
+    // 处理其父类的字段
     if (clazz.getSuperclass() != null) {
       addFields(clazz.getSuperclass());
     }
   }
 
+  /**
+   *
+   * @param field
+   */
   private void addSetField(Field field) {
     if (isValidPropertyName(field.getName())) {
       setMethods.put(field.getName(), new SetFieldInvoker(field));
