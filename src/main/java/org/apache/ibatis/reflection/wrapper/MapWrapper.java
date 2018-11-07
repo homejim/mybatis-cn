@@ -26,6 +26,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * @author Clinton Begin
+ * Map 的封装类
  */
 public class MapWrapper extends BaseWrapper {
 
@@ -36,12 +37,19 @@ public class MapWrapper extends BaseWrapper {
     this.map = map;
   }
 
+  /**
+   * 最终还是调用
+   */
   @Override
   public Object get(PropertyTokenizer prop) {
+    // 索引存在， 表明是集合
     if (prop.getIndex() != null) {
+      // 获取指定的集合
       Object collection = resolveCollection(prop, map);
+      // 获取集合元素
       return getCollectionValue(prop, collection);
     } else {
+      // 索引不存在， 直接获取
       return map.get(prop.getName());
     }
   }
