@@ -34,25 +34,40 @@ public class MetaClass {
   private final ReflectorFactory reflectorFactory;
   private final Reflector reflector;
 
+  /**
+   * MetaClass 构造函数
+   */
   private MetaClass(Class<?> type, ReflectorFactory reflectorFactory) {
     this.reflectorFactory = reflectorFactory;
     this.reflector = reflectorFactory.findForClass(type);
   }
 
+  /**
+   * 跟上面的是一样的
+   */
   public static MetaClass forClass(Class<?> type, ReflectorFactory reflectorFactory) {
     return new MetaClass(type, reflectorFactory);
   }
 
+  /**
+   *
+   */
   public MetaClass metaClassForProperty(String name) {
     Class<?> propType = reflector.getGetterType(name);
     return MetaClass.forClass(propType, reflectorFactory);
   }
 
+  /**
+   * 查找 Property
+   */
   public String findProperty(String name) {
+    // 通过 buildProperty 方法
     StringBuilder prop = buildProperty(name, new StringBuilder());
     return prop.length() > 0 ? prop.toString() : null;
   }
-
+  /**
+   * 查找 Property
+   */
   public String findProperty(String name, boolean useCamelCaseMapping) {
     if (useCamelCaseMapping) {
       name = name.replace("_", "");
@@ -88,8 +103,16 @@ public class MetaClass {
     return getGetterType(prop);
   }
 
+  /**
+   * 为属性创建 MetaClass 对象
+   *
+   * @param prop 属性名
+   * @return
+   */
   private MetaClass metaClassForProperty(PropertyTokenizer prop) {
+    // 查找指定属性对应的 Class
     Class<?> propType = getGetterType(prop);
+    // 创建对应的 MetaClass 对象
     return MetaClass.forClass(propType, reflectorFactory);
   }
 
@@ -145,8 +168,16 @@ public class MetaClass {
     }
   }
 
+  /**
+   * 查找属性是否有对应得属性
+   *
+   * @param name
+   * @return
+   */
   public boolean hasGetter(String name) {
+    // 解析属性表达式
     PropertyTokenizer prop = new PropertyTokenizer(name);
+    // 存在待处理的子表达式
     if (prop.hasNext()) {
       if (reflector.hasGetter(prop.getName())) {
         MetaClass metaProp = metaClassForProperty(prop);
@@ -168,13 +199,19 @@ public class MetaClass {
   }
 
   private StringBuilder buildProperty(String name, StringBuilder builder) {
+    // 解析属性表达式
     PropertyTokenizer prop = new PropertyTokenizer(name);
+    // 是否有子表达式
     if (prop.hasNext()) {
+      // 查找对应的属性
       String propertyName = reflector.findPropertyName(prop.getName());
       if (propertyName != null) {
+        // 追加属性名
         builder.append(propertyName);
         builder.append(".");
+        // 创建对应的 MetaClass 对象
         MetaClass metaProp = metaClassForProperty(propertyName);
+        // 解析子表达式
         metaProp.buildProperty(prop.getChildren(), builder);
       }
     } else {
