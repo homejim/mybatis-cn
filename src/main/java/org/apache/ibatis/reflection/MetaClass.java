@@ -28,6 +28,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * @author Clinton Begin
+ * 对反射类的元信息的封装和处理
  */
 public class MetaClass {
 
