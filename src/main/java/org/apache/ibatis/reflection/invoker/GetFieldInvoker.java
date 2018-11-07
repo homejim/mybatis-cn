@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Clinton Begin
+ * Getter 的 Invoker
  */
 public class GetFieldInvoker implements Invoker {
   private final Field field;

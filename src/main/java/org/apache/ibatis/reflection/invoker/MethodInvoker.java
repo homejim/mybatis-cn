@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author Clinton Begin
+ * 方法的 Invoker
  */
 public class MethodInvoker implements Invoker {
 
