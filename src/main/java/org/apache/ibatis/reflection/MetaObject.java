@@ -29,13 +29,19 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
 
 /**
  * @author Clinton Begin
+ * 属性表达式的解析
  */
 public class MetaObject {
 
+  // 原始的 JavaBean 对象
   private final Object originalObject;
+  // 对象的包装类
   private final ObjectWrapper objectWrapper;
+  // 对象工厂类
   private final ObjectFactory objectFactory;
+  // ObjectWrapper 的工厂类
   private final ObjectWrapperFactory objectWrapperFactory;
+  // Reflector 对象的工厂类
   private final ReflectorFactory reflectorFactory;
 
   private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
@@ -44,6 +50,7 @@ public class MetaObject {
     this.objectWrapperFactory = objectWrapperFactory;
     this.reflectorFactory = reflectorFactory;
 
+    // 将 object 转化为对应的 objectWrapper
     if (object instanceof ObjectWrapper) {
       this.objectWrapper = (ObjectWrapper) object;
     } else if (objectWrapperFactory.hasWrapperFor(object)) {
@@ -57,6 +64,9 @@ public class MetaObject {
     }
   }
 
+  /**
+   * 私有化构造函数， 使用该静态方法初始化 MetaObject
+   */
   public static MetaObject forObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
     if (object == null) {
       return SystemMetaObject.NULL_META_OBJECT;
@@ -109,6 +119,9 @@ public class MetaObject {
     return objectWrapper.hasGetter(name);
   }
 
+  /**
+   * 取值
+   */
   public Object getValue(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
@@ -123,6 +136,9 @@ public class MetaObject {
     }
   }
 
+  /**
+   * 设置值
+   */
   public void setValue(String name, Object value) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
