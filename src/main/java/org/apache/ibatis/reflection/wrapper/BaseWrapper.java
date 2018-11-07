@@ -24,6 +24,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * @author Clinton Begin
+ * 实现 ObjectWrapper 的抽象类
  */
 public abstract class BaseWrapper implements ObjectWrapper {
 
@@ -42,14 +43,20 @@ public abstract class BaseWrapper implements ObjectWrapper {
     }
   }
 
+  /**
+   *  获取集合中的数值
+   */
   protected Object getCollectionValue(PropertyTokenizer prop, Object collection) {
+    // Map 类型， index 为 key
     if (collection instanceof Map) {
       return ((Map) collection).get(prop.getIndex());
     } else {
       int i = Integer.parseInt(prop.getIndex());
+      // List 类， 对应下标
       if (collection instanceof List) {
         return ((List) collection).get(i);
       } else if (collection instanceof Object[]) {
+        // 对应数组类型的处理
         return ((Object[]) collection)[i];
       } else if (collection instanceof char[]) {
         return ((char[]) collection)[i];
@@ -73,11 +80,16 @@ public abstract class BaseWrapper implements ObjectWrapper {
     }
   }
 
+  /**
+   * 设置集合中的数值
+   */
   protected void setCollectionValue(PropertyTokenizer prop, Object collection, Object value) {
+    // 对应 Map 对象
     if (collection instanceof Map) {
       ((Map) collection).put(prop.getIndex(), value);
     } else {
       int i = Integer.parseInt(prop.getIndex());
+      // List 类型
       if (collection instanceof List) {
         ((List) collection).set(i, value);
       } else if (collection instanceof Object[]) {
