@@ -28,6 +28,7 @@ import org.apache.ibatis.reflection.property.PropertyTokenizer;
 
 /**
  * @author Clinton Begin
+ * 继承了 BaseWrapper 抽象类
  */
 public class BeanWrapper extends BaseWrapper {
 
@@ -40,12 +41,19 @@ public class BeanWrapper extends BaseWrapper {
     this.metaClass = MetaClass.forClass(object.getClass(), metaObject.getReflectorFactory());
   }
 
+  /**
+   * 根据表达式获取指定的值
+   */
   @Override
   public Object get(PropertyTokenizer prop) {
+    // 索引存在， 表明是集合
     if (prop.getIndex() != null) {
+      // 获取指定的集合
       Object collection = resolveCollection(prop, object);
+      // 获取集合元素
       return getCollectionValue(prop, collection);
     } else {
+      // 索引不存在， 则表明是普通的对象，查找并调用 Invoker 相关方法获取属性
       return getBeanProperty(prop, object);
     }
   }
@@ -157,10 +165,15 @@ public class BeanWrapper extends BaseWrapper {
     return metaValue;
   }
 
+  /**
+   * 获取 Bean 的属性
+   */
   private Object getBeanProperty(PropertyTokenizer prop, Object object) {
     try {
+      // 获取对应的 Invoker
       Invoker method = metaClass.getGetInvoker(prop.getName());
       try {
+        // 调用 Invoker 获取属性值
         return method.invoke(object, NO_ARGUMENTS);
       } catch (Throwable t) {
         throw ExceptionUtil.unwrapThrowable(t);
@@ -172,6 +185,9 @@ public class BeanWrapper extends BaseWrapper {
     }
   }
 
+  /**
+   * 设置 Bean 的属性
+   */
   private void setBeanProperty(PropertyTokenizer prop, Object object, Object value) {
     try {
       Invoker method = metaClass.getSetInvoker(prop.getName());
