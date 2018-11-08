@@ -22,11 +22,14 @@ import java.sql.SQLException;
 
 /**
  * @author Clinton Begin
+ * 类型转换器
  */
 public interface TypeHandler<T> {
 
+  // 通过 PreparedStatement 为 SQL 语句绑定参数时， 会将数据由 JdbcType 转化为 Java 类型
   void setParameter(PreparedStatement ps, int i, T parameter, JdbcType jdbcType) throws SQLException;
 
+  // 获取结果集
   T getResult(ResultSet rs, String columnName) throws SQLException;
 
   T getResult(ResultSet rs, int columnIndex) throws SQLException;
