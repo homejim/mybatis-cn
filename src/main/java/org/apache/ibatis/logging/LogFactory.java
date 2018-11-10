@@ -20,6 +20,7 @@ import java.lang.reflect.Constructor;
 /**
  * @author Clinton Begin
  * @author Eduardo Macarron
+ * 日志工厂
  */
 public final class LogFactory {
 
@@ -28,8 +29,10 @@ public final class LogFactory {
    */
   public static final String MARKER = "MYBATIS";
 
+  // 记录当前使用的第三方日志库组件所对应的适配器的方法
   private static Constructor<? extends Log> logConstructor;
 
+  // tryImplementation 进行尝试加载
   static {
     tryImplementation(LogFactory::useSlf4jLogging);
     tryImplementation(LogFactory::useCommonsLogging);
@@ -39,6 +42,7 @@ public final class LogFactory {
     tryImplementation(LogFactory::useNoLogging);
   }
 
+  // 私有化
   private LogFactory() {
     // disable construction
   }
@@ -54,6 +58,12 @@ public final class LogFactory {
       throw new LogException("Error creating logger for logger " + logger + ".  Cause: " + t, t);
     }
   }
+
+  /**
+   * 以下的 useXXXogging 的方法都是尝试加载日志的实现
+   * 最终的实现都是 setImplementation
+   */
+
 
   public static synchronized void useCustomLogging(Class<? extends Log> clazz) {
     setImplementation(clazz);
@@ -87,9 +97,14 @@ public final class LogFactory {
     setImplementation(org.apache.ibatis.logging.nologging.NoLoggingImpl.class);
   }
 
+  /**
+   * 尝试加载
+   * @param runnable
+   */
   private static void tryImplementation(Runnable runnable) {
     if (logConstructor == null) {
       try {
+        // 会调用 useSlf4jLogging 类似的方法
         runnable.run();
       } catch (Throwable t) {
         // ignore
@@ -97,8 +112,13 @@ public final class LogFactory {
     }
   }
 
+  /**
+   * 设计日志的实现类
+   * @param implClass Log 的子类
+   */
   private static void setImplementation(Class<? extends Log> implClass) {
     try {
+      // 获取构造方法
       Constructor<? extends Log> candidate = implClass.getConstructor(String.class);
       Log log = candidate.newInstance(LogFactory.class.getName());
       if (log.isDebugEnabled()) {
