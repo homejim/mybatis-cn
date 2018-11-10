@@ -17,8 +17,11 @@ package org.apache.ibatis.logging;
 
 /**
  * @author Clinton Begin
+ * Log 类
  */
 public interface Log {
+
+  // 提供了日志的一些方法， 跟常用的没啥不一样
 
   boolean isDebugEnabled();
 
