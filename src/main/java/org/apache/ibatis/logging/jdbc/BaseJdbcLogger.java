@@ -108,6 +108,10 @@ public abstract class BaseJdbcLogger {
     return columnMap.get(key);
   }
 
+  /**
+   * 获取值， 并组装成 string 输出
+   *
+   */
   protected String getParameterValueString() {
     List<Object> typeList = new ArrayList<>(columnValues.size());
     for (Object value : columnValues) {
