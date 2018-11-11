@@ -20,26 +20,31 @@ import java.util.Arrays;
 
 /**
  * Provides hashCode, equals and toString methods that can handle array.
+ * 提供可以处理数组的 hashCode, equals, toString 方法
  */
 public class ArrayUtil {
 
   /**
    * Returns a hash code for {@code obj}.
-   * 
-   * @param obj
-   *          The object to get a hash code for. May be an array or <code>null</code>.
+   * 返回 obj 对象的 hash code
+   *
+   * @param obj The object to get a hash code for. May be an array or <code>null</code>.
    * @return A hash code of {@code obj} or 0 if {@code obj} is <code>null</code>
    */
   public static int hashCode(Object obj) {
+    // 如果是 null 则返回 0
     if (obj == null) {
       // for consistency with Arrays#hashCode() and Objects#hashCode()
       return 0;
     }
     final Class<?> clazz = obj.getClass();
+    // 如果不是数组， 调用其本身的 hashcode 方法
     if (!clazz.isArray()) {
       return obj.hashCode();
     }
+    // 获取数组的类型
     final Class<?> componentType = clazz.getComponentType();
+    // 通过  Arrays.hashCode 进行
     if (long.class.equals(componentType)) {
       return Arrays.hashCode((long[]) obj);
     } else if (int.class.equals(componentType)) {
