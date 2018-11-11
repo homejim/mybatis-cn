@@ -42,6 +42,9 @@ public class XMLIncludeTransformer {
     this.builderAssistant = builderAssistant;
   }
 
+  /**
+   * 从 parseStatementNode 方法进入时， Node 还是 （select|insert|update|delete） 节点
+   */
   public void applyIncludes(Node source) {
     Properties variablesContext = new Properties();
     // 获取的是 mybatis-config.xml 所定义的属性
@@ -55,6 +58,7 @@ public class XMLIncludeTransformer {
 
   /**
    * Recursively apply includes through all SQL fragments.
+   * 递归的包含所有的 SQL 节点
    *
    * @param source           Include node in DOM tree
    * @param variablesContext Current context for static variables with values
