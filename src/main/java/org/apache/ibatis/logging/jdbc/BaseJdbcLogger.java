@@ -31,18 +31,24 @@ import org.apache.ibatis.reflection.ArrayUtil;
 
 /**
  * Base class for proxies to do logging
- * 
+ * 其他 Logger 的父类
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
 public abstract class BaseJdbcLogger {
 
+  // set* 相关方法
   protected static final Set<String> SET_METHODS = new HashSet<>();
+  // 执行相关的方法
   protected static final Set<String> EXECUTE_METHODS = new HashSet<>();
 
+  // 记录了 PreparedStatement.set* 方法设置的 key->value
   private final Map<Object, Object> columnMap = new HashMap<>();
 
+  // 记录了 PreparedStatement.set* 方法设置的 key
   private final List<Object> columnNames = new ArrayList<>();
+  // 记录了 PreparedStatement.set* 方法设置的 value
   private final List<Object> columnValues = new ArrayList<>();
 
   protected Log statementLog;
