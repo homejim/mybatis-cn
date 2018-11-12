@@ -85,12 +85,14 @@ public class XMLIncludeTransformer {
     } else if (source.getNodeType() == Node.ELEMENT_NODE) {
       if (included && !variablesContext.isEmpty()) {
         // replace variables in attribute values
+        //  获取所有的属性值， 并使用 variablesContext 进行占位符的解析
         NamedNodeMap attributes = source.getAttributes();
         for (int i = 0; i < attributes.getLength(); i++) {
           Node attr = attributes.item(i);
           attr.setNodeValue(PropertyParser.parse(attr.getNodeValue(), variablesContext));
         }
       }
+      // 获取所有的子类， 并递归解析
       NodeList children = source.getChildNodes();
       for (int i = 0; i < children.getLength(); i++) {
         applyIncludes(children.item(i), variablesContext, included);
@@ -98,6 +100,7 @@ public class XMLIncludeTransformer {
     } else if (included && source.getNodeType() == Node.TEXT_NODE
             && !variablesContext.isEmpty()) {
       // replace variables in text node
+      // 使用 variablesContext 进行占位符的解析
       source.setNodeValue(PropertyParser.parse(source.getNodeValue(), variablesContext));
     }
   }
