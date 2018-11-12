@@ -25,11 +25,14 @@ import java.net.URL;
  */
 public class ClassLoaderWrapper {
 
+  // 默认的类加载器
   ClassLoader defaultClassLoader;
+  // System ClassLoader
   ClassLoader systemClassLoader;
 
   ClassLoaderWrapper() {
     try {
+      // 给 systemClassLoader 赋值
       systemClassLoader = ClassLoader.getSystemClassLoader();
     } catch (SecurityException ignored) {
       // AccessControlException on Google App Engine   
@@ -38,7 +41,7 @@ public class ClassLoaderWrapper {
   
   /**
    * Get a resource as a URL using the current class path
-   *
+   * 
    * @param resource - the resource to locate
    * @return the resource or null
    */
@@ -103,12 +106,15 @@ public class ClassLoaderWrapper {
 
   /**
    * Try to get a resource from a group of classloaders
+   * <p>
+   * 尝试从一组类加载器中获取相应的资源
    *
    * @param resource    - the resource to get
    * @param classLoader - the classloaders to examine
    * @return the resource or null
    */
   InputStream getResourceAsStream(String resource, ClassLoader[] classLoader) {
+    // 遍历
     for (ClassLoader cl : classLoader) {
       if (null != cl) {
 
@@ -116,6 +122,7 @@ public class ClassLoaderWrapper {
         InputStream returnValue = cl.getResourceAsStream(resource);
 
         // now, some class loaders want this leading "/", so we'll add it and try again if we didn't find the resource
+        // 类似， 有些类加载器前面需要加 "/"
         if (null == returnValue) {
           returnValue = cl.getResourceAsStream("/" + resource);
         }
@@ -139,21 +146,25 @@ public class ClassLoaderWrapper {
 
     URL url;
 
+    // 遍历类加载器数组
     for (ClassLoader cl : classLoader) {
 
       if (null != cl) {
 
         // look for the resource as passed in...
+        // 查找传入的资源
         url = cl.getResource(resource);
 
         // ...but some class loaders want this leading "/", so we'll add it
         // and try again if we didn't find the resource
+        // 部分类加载器以 "/" 开始， 因此找不到的话再加 "/" 再试一次
         if (null == url) {
           url = cl.getResource("/" + resource);
         }
 
         // "It's always in the last place I look for it!"
         // ... because only an idiot would keep looking for it after finding it, so stop looking already.
+        // 找到就返回
         if (null != url) {
           return url;
         }
@@ -169,6 +180,7 @@ public class ClassLoaderWrapper {
 
   /**
    * Attempt to load a class from a group of classloaders
+   * 根据类名， 从类加载器中获取类 Class 对象
    *
    * @param name        - the class to load
    * @param classLoader - the group of classloaders to examine
@@ -177,14 +189,15 @@ public class ClassLoaderWrapper {
    */
   Class<?> classForName(String name, ClassLoader[] classLoader) throws ClassNotFoundException {
 
+    // 遍历
     for (ClassLoader cl : classLoader) {
 
       if (null != cl) {
 
         try {
-
+          //  forName 这个方法应该很熟悉啦
           Class<?> c = Class.forName(name, true, cl);
-
+          // 找到则返回
           if (null != c) {
             return c;
           }
@@ -201,6 +214,12 @@ public class ClassLoaderWrapper {
 
   }
 
+  /**
+   * 类加载器数组， 里面指明了类加载器的使用顺序
+   *
+   * @param classLoader
+   * @return
+   */
   ClassLoader[] getClassLoaders(ClassLoader classLoader) {
     return new ClassLoader[]{
         classLoader,
