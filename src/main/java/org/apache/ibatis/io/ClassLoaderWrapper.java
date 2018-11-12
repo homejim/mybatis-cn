@@ -41,7 +41,7 @@ public class ClassLoaderWrapper {
   
   /**
    * Get a resource as a URL using the current class path
-   * 
+   *
    * @param resource - the resource to locate
    * @return the resource or null
    */
