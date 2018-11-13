@@ -29,36 +29,46 @@ import org.apache.ibatis.logging.LogFactory;
 
 /**
  * Provides a very simple API for accessing resources within an application server.
- * 
+ *
+ * 虚拟文件系统: 提供简单的API来访问资源
+ *
  * @author Ben Gunter
  */
 public abstract class VFS {
   private static final Log log = LogFactory.getLog(VFS.class);
 
-  /** The built-in implementations. */
+  /** The built-in implementations.
+   *  内置的实现类
+   */
   public static final Class<?>[] IMPLEMENTATIONS = { JBoss6VFS.class, DefaultVFS.class };
 
-  /** The list to which implementations are added by {@link #addImplClass(Class)}. */
+  /** The list to which implementations are added by {@link #addImplClass(Class)}.
+   *  用户自定义的实现类
+   */
   public static final List<Class<? extends VFS>> USER_IMPLEMENTATIONS = new ArrayList<>();
 
-  /** Singleton instance holder. */
+  /** Singleton instance holder.
+   * 单例模式
+   */
   private static class VFSHolder {
     static final VFS INSTANCE = createVFS();
 
     @SuppressWarnings("unchecked")
     static VFS createVFS() {
       // Try the user implementations first, then the built-ins
+      // 先使用用户定义的 VFS， 在使用内置的
       List<Class<? extends VFS>> impls = new ArrayList<>();
       impls.addAll(USER_IMPLEMENTATIONS);
       impls.addAll(Arrays.asList((Class<? extends VFS>[]) IMPLEMENTATIONS));
 
       // Try each implementation class until a valid one is found
+      // 遍历每一种实现， 直到找到
       VFS vfs = null;
       for (int i = 0; vfs == null || !vfs.isValid(); i++) {
         Class<? extends VFS> impl = impls.get(i);
         try {
           vfs = impl.newInstance();
-          if (vfs == null || !vfs.isValid()) {
+          if (vfs == null || !vfs.isValid()) {//是否有效
             if (log.isDebugEnabled()) {
               log.debug("VFS implementation " + impl.getName() +
                   " is not valid in this environment.");
@@ -92,6 +102,8 @@ public abstract class VFS {
   /**
    * Adds the specified class to the list of {@link VFS} implementations. Classes added in this
    * manner are tried in the order they are added and before any of the built-in implementations.
+   *
+   * 添加用户自己的VFS
    * 
    * @param clazz The {@link VFS} implementation class to add.
    */
@@ -101,7 +113,9 @@ public abstract class VFS {
     }
   }
 
-  /** Get a class by name. If the class is not found then return null. */
+  /** Get a class by name. If the class is not found then return null.
+   * 根据类名获取一个类
+   */
   protected static Class<?> getClass(String className) {
     try {
       return Thread.currentThread().getContextClassLoader().loadClass(className);
@@ -116,7 +130,9 @@ public abstract class VFS {
 
   /**
    * Get a method by name and parameter types. If the method is not found then return null.
-   * 
+   *
+   * 根据方法名和参数获取对应得方法
+   *
    * @param clazz The class to which the method belongs.
    * @param methodName The name of the method.
    * @param parameterTypes The types of the parameters accepted by the method.
@@ -138,7 +154,7 @@ public abstract class VFS {
 
   /**
    * Invoke a method on an object and return whatever it returns.
-   * 
+   * 反射调用
    * @param method The method to invoke.
    * @param object The instance or class (for static methods) on which to invoke the method.
    * @param parameters The parameters to pass to the method.
@@ -174,12 +190,16 @@ public abstract class VFS {
     return Collections.list(Thread.currentThread().getContextClassLoader().getResources(path));
   }
 
-  /** Return true if the {@link VFS} implementation is valid for the current environment. */
+  /** Return true if the {@link VFS} implementation is valid for the current environment.
+   * VFS 在当前的环境中是否有效
+   */
   public abstract boolean isValid();
 
   /**
    * Recursively list the full resource path of all the resources that are children of the
    * resource identified by a URL.
+   *
+   * 递归的列出所有的资源
    * 
    * @param url The URL that identifies the resource to list.
    * @param forPath The path to the resource that is identified by the URL. Generally, this is the
