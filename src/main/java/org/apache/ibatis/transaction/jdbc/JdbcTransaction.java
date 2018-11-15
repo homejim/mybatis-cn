@@ -31,6 +31,8 @@ import org.apache.ibatis.transaction.TransactionException;
  * Delays connection retrieval until getConnection() is called.
  * Ignores commit or rollback requests when autocommit is on.
  *
+ * 直接使用 JDBC 的事务和回滚机制
+ *
  * @author Clinton Begin
  *
  * @see JdbcTransactionFactory
@@ -39,11 +41,18 @@ public class JdbcTransaction implements Transaction {
 
   private static final Log log = LogFactory.getLog(JdbcTransaction.class);
 
+  // 事务的对应的数据库连接
   protected Connection connection;
+  // 事务所属的 DataSource
   protected DataSource dataSource;
+  // 事务的级别
   protected TransactionIsolationLevel level;
+  // 是否自动提交
   protected boolean autoCommit;
 
+  /**
+   * 构造函数： 初始化数据库连接之外的其他参数， 数据库连接延迟加载
+   */
   public JdbcTransaction(DataSource ds, TransactionIsolationLevel desiredLevel, boolean desiredAutoCommit) {
     dataSource = ds;
     level = desiredLevel;
@@ -54,6 +63,12 @@ public class JdbcTransaction implements Transaction {
     this.connection = connection;
   }
 
+  /**
+   * 数据库连接在此进行了打开
+   *
+   * @return
+   * @throws SQLException
+   */
   @Override
   public Connection getConnection() throws SQLException {
     if (connection == null) {
@@ -62,6 +77,11 @@ public class JdbcTransaction implements Transaction {
     return connection;
   }
 
+  /**
+   * 提交函数只是进行简单的校验， 最终还是使用 JDBC 本身的 commit()
+   *
+   * @throws SQLException
+   */
   @Override
   public void commit() throws SQLException {
     if (connection != null && !connection.getAutoCommit()) {
@@ -72,6 +92,11 @@ public class JdbcTransaction implements Transaction {
     }
   }
 
+  /**
+   * 回滚函数也只是进行简单的校验， 最终还是使用 JDBC 本身的 commit()
+   *
+   * @throws SQLException
+   */
   @Override
   public void rollback() throws SQLException {
     if (connection != null && !connection.getAutoCommit()) {
