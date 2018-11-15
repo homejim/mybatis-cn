@@ -30,6 +30,7 @@ import org.apache.ibatis.transaction.Transaction;
  * Ignores all commit or rollback requests.
  * By default, it closes the connection but can be configured not to do it.
  *
+ *
  * @author Clinton Begin
  *
  * @see ManagedTransactionFactory
@@ -38,9 +39,13 @@ public class ManagedTransaction implements Transaction {
 
   private static final Log log = LogFactory.getLog(ManagedTransaction.class);
 
+  // 事务所属的 DataSource
   private DataSource dataSource;
+  // 事务的级别
   private TransactionIsolationLevel level;
+  // 事务的对应的数据库连接
   private Connection connection;
+  // 是否关闭事务
   private final boolean closeConnection;
 
   public ManagedTransaction(Connection connection, boolean closeConnection) {
@@ -48,12 +53,22 @@ public class ManagedTransaction implements Transaction {
     this.closeConnection = closeConnection;
   }
 
+  /**
+   * 构造函数： 初始化数据库连接之外的其他参数， 数据库连接延迟加载
+   */
   public ManagedTransaction(DataSource ds, TransactionIsolationLevel level, boolean closeConnection) {
     this.dataSource = ds;
     this.level = level;
     this.closeConnection = closeConnection;
   }
 
+
+  /**
+   * 获取数据库连接， 数据库连接在此进行了打开
+   *
+   * @return
+   * @throws SQLException
+   */
   @Override
   public Connection getConnection() throws SQLException {
     if (this.connection == null) {

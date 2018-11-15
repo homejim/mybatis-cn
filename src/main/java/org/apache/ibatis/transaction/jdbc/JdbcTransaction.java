@@ -64,7 +64,7 @@ public class JdbcTransaction implements Transaction {
   }
 
   /**
-   * 数据库连接在此进行了打开
+   * 获取数据库连接， 数据库连接在此进行了打开
    *
    * @return
    * @throws SQLException
