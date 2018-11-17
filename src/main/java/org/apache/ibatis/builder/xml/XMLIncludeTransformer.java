@@ -31,6 +31,7 @@ import org.w3c.dom.NodeList;
 
 /**
  * @author Frank D. Martinez [mnesarco]
+ * inlcude 解析相关类
  */
 public class XMLIncludeTransformer {
 
@@ -105,10 +106,16 @@ public class XMLIncludeTransformer {
     }
   }
 
+  /**
+   * 通过 refid 查找 sql 节点
+   */
   private Node findSqlFragment(String refid, Properties variables) {
+    // refid 也可以是 ${xxx} 的形式， 因此需要使用 PropertyParser 进行解析
     refid = PropertyParser.parse(refid, variables);
+    // 在 refid 前面添加 namespace
     refid = builderAssistant.applyCurrentNamespace(refid, true);
     try {
+      // 通过 Configuration.sqlFragments 获取该值
       XNode nodeToInclude = configuration.getSqlFragments().get(refid);
       return nodeToInclude.getNode().cloneNode(true);
     } catch (IllegalArgumentException e) {
@@ -121,23 +128,30 @@ public class XMLIncludeTransformer {
   }
 
   /**
-   * Read placeholders and their values from include node definition. 
-   * @param node Include node instance
+   * Read placeholders and their values from include node definition.
+   * <p>
+   * 从 include 下获取 properties 值， 并添加到 inheritedVariablesContext 中
+   *
+   * @param node                      Include node instance
    * @param inheritedVariablesContext Current context used for replace variables in new variables values
    * @return variables context from include instance (no inherited values)
    */
   private Properties getVariablesContext(Node node, Properties inheritedVariablesContext) {
     Map<String, String> declaredProperties = null;
+    // 获取子节点
     NodeList children = node.getChildNodes();
+    // 遍历
     for (int i = 0; i < children.getLength(); i++) {
       Node n = children.item(i);
       if (n.getNodeType() == Node.ELEMENT_NODE) {
         String name = getStringAttribute(n, "name");
         // Replace variables inside
+        // properties 的 value 值还可以使用 ${xxxx} 的方式， 因此通过 PropertyParser.parse 进行解析
         String value = PropertyParser.parse(getStringAttribute(n, "value"), inheritedVariablesContext);
         if (declaredProperties == null) {
           declaredProperties = new HashMap<>();
         }
+        // 将其存入 declaredProperties 中
         if (declaredProperties.put(name, value) != null) {
           throw new BuilderException("Variable " + name + " defined twice in the same include definition");
         }
@@ -146,6 +160,7 @@ public class XMLIncludeTransformer {
     if (declaredProperties == null) {
       return inheritedVariablesContext;
     } else {
+      // 如果是非空， 生产一个新的 Properties 对象， 并将上面获得取得 Map 对象放入其中
       Properties newProperties = new Properties();
       newProperties.putAll(inheritedVariablesContext);
       newProperties.putAll(declaredProperties);
