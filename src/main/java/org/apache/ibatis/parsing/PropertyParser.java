@@ -18,6 +18,7 @@ package org.apache.ibatis.parsing;
 import java.util.Properties;
 
 /**
+ * ${XXX} 属性解析
  * @author Clinton Begin
  * @author Kazuki Shimizu
  */
@@ -50,6 +51,13 @@ public class PropertyParser {
     // Prevent Instantiation
   }
 
+  /**
+   *  静态方法， 解析${xxx} 所用
+   *
+   * @param string 需要解析的对象
+   * @param variables 属性值
+   * @return
+   */
   public static String parse(String string, Properties variables) {
     VariableTokenHandler handler = new VariableTokenHandler(variables);
     GenericTokenParser parser = new GenericTokenParser("${", "}", handler);
@@ -67,14 +75,23 @@ public class PropertyParser {
       this.defaultValueSeparator = getPropertyValue(KEY_DEFAULT_VALUE_SEPARATOR, DEFAULT_VALUE_SEPARATOR);
     }
 
+    /**
+     * 获取 key 对应的属性值
+     */
     private String getPropertyValue(String key, String defaultValue) {
       return (variables == null) ? defaultValue : variables.getProperty(key, defaultValue);
     }
 
+    /**
+     * ${xxx} 的处理
+     * @param content 要处理的对象
+     * @return
+     */
     @Override
     public String handleToken(String content) {
       if (variables != null) {
         String key = content;
+        // 是否启用默认值选项
         if (enableDefaultValue) {
           final int separatorIndex = content.indexOf(defaultValueSeparator);
           String defaultValue = null;
@@ -86,6 +103,7 @@ public class PropertyParser {
             return variables.getProperty(key, defaultValue);
           }
         }
+        // 直接从属性中获取值
         if (variables.containsKey(key)) {
           return variables.getProperty(key);
         }
