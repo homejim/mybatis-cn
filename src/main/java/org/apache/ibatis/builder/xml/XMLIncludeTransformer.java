@@ -80,7 +80,9 @@ public class XMLIncludeTransformer {
         toInclude = source.getOwnerDocument().importNode(toInclude, true);
       }
       // 将 <include> 节点替换成解析后的 <sql>
+      // 这里有个很关键的点， <sql> 在此时的所属节点是文档本身
       source.getParentNode().replaceChild(toInclude, source);
+      // 执行完上面的函数之后， <sql> 节点的所属节点是原来 <include>的节点
       while (toInclude.hasChildNodes()) {
         toInclude.getParentNode().insertBefore(toInclude.getFirstChild(), toInclude);
       }
