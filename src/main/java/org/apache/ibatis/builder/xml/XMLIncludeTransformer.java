@@ -74,10 +74,12 @@ public class XMLIncludeTransformer {
       Properties toIncludeContext = getVariablesContext(source, variablesContext);
       // 递归处理 <include> 节点， 在 <sql> 节点中可能会 <include> 其他 SQL 片段
       applyIncludes(toInclude, toIncludeContext, true);
+      // 如果不是同一个文档（aMapper.xml 可能通过 refid 引用 bMapper.xml 的属性），
+      // 则将 toinclude 节点的递归复制过来
       if (toInclude.getOwnerDocument() != source.getOwnerDocument()) {
         toInclude = source.getOwnerDocument().importNode(toInclude, true);
       }
-      // 将 <include> 节点替换成 <sql>
+      // 将 <include> 节点替换成解析后的 <sql>
       source.getParentNode().replaceChild(toInclude, source);
       while (toInclude.hasChildNodes()) {
         toInclude.getParentNode().insertBefore(toInclude.getFirstChild(), toInclude);
