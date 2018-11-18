@@ -37,12 +37,19 @@ public class TextSqlNode implements SqlNode {
     this.text = text;
     this.injectionFilter = injectionFilter;
   }
-  
+
+  /**
+   * 判断是否为动态节点
+   * @return
+   */
   public boolean isDynamic() {
 
+    // 该 DynamicCheckerTokenParser 的 handleToken 方法不做任何的操作， 只是节点标记为动态 SQL 节点
     DynamicCheckerTokenParser checker = new DynamicCheckerTokenParser();
+    // 使用通过解析器进行解析
     GenericTokenParser parser = createParser(checker);
     parser.parse(text);
+    // 返回， 有$ 就是动态节点
     return checker.isDynamic();
   }
 
