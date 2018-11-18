@@ -38,12 +38,17 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 /**
  * @author Clinton Begin
  * @author Kazuki Shimizu
+ *
+ * 有自增主键的数据库的键生成器
+ *
  */
 public class Jdbc3KeyGenerator implements KeyGenerator {
 
   /**
    * A shared instance.
-   * 
+   *
+   * 共享的实例
+   *
    * @since 3.4.3
    */
   public static final Jdbc3KeyGenerator INSTANCE = new Jdbc3KeyGenerator();
@@ -58,13 +63,18 @@ public class Jdbc3KeyGenerator implements KeyGenerator {
     processBatch(ms, stmt, parameter);
   }
 
+  /**
+   *
+   */
   public void processBatch(MappedStatement ms, Statement stmt, Object parameter) {
+    // 获取 keyProperties, 不能为空
     final String[] keyProperties = ms.getKeyProperties();
     if (keyProperties == null || keyProperties.length == 0) {
       return;
     }
     ResultSet rs = null;
     try {
+      // 获得返回的主键值结果集
       rs = stmt.getGeneratedKeys();
       final Configuration configuration = ms.getConfiguration();
       if (rs.getMetaData().getColumnCount() >= keyProperties.length) {
