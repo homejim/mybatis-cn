@@ -30,14 +30,30 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Eduardo Macarron
+ * 默认的 LanguageDriver 实现类
  */
 public class XMLLanguageDriver implements LanguageDriver {
 
+  /**|
+   * 使用默认的参数处理器 DefaultParameterHandler
+   * @param mappedStatement The mapped statement that is being executed
+   * @param parameterObject The input parameter object (can be null)
+   * @param boundSql The resulting SQL once the dynamic language has been executed.
+   * @return
+   */
   @Override
   public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql) {
     return new DefaultParameterHandler(mappedStatement, parameterObject, boundSql);
   }
 
+  /**
+   * 主要是为了调用 parseScriptNode 函数
+   *
+   * @param configuration The MyBatis configuration
+   * @param script XNode parsed from a XML file
+   * @param parameterType input parameter type got from a mapper method or specified in the parameterType xml attribute. Can be null.
+   * @return
+   */
   @Override
   public SqlSource createSqlSource(Configuration configuration, XNode script, Class<?> parameterType) {
     XMLScriptBuilder builder = new XMLScriptBuilder(configuration, script, parameterType);
