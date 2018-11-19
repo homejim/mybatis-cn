@@ -30,6 +30,7 @@ MyBatis 是一款优秀的支持自定义 SQL 查询、存储过程和高级映�
 - [mybatis百科-列映射类ResultMapping](https://www.cnblogs.com/homejim/p/9833863.html)： resultMap 节点解析相关的类
 - [mybatis百科-结果集映射类ResultMap](https://www.cnblogs.com/homejim/p/9840373.html)： resultMap 节点解析相关的类
 - [ mybatis源码-解析配置文件（四-二）之配置文件Mapper解析(resultMap)](https://www.cnblogs.com/homejim/p/9853703.html)： resultMap 完整解析流程。 看完知道原来 resultMap 在内存中长这样
+- [mybatis源码-Mapper解析之SQL 语句节点解析（一条语句对应一个MappedStatement)](https://www.cnblogs.com/homejim/p/9986680.html)： 我们写的insert,delete, update, select在内存中是这样存储的
 - 未完待续
 ## MyBatis 提取出的工具
 - [mybatis抽取出的工具-（一）通用标记解析器（即拿即用）](https://www.cnblogs.com/homejim/p/9739632.html)： 通用的标记解析器， 用于处理字符串中的占位符
