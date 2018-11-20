@@ -24,10 +24,13 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
+ * 静态SQLSource
  */
 public class StaticSqlSource implements SqlSource {
 
+  // sql
   private final String sql;
+  // 参数集合
   private final List<ParameterMapping> parameterMappings;
   private final Configuration configuration;
 
@@ -41,6 +44,9 @@ public class StaticSqlSource implements SqlSource {
     this.configuration = configuration;
   }
 
+  /**
+   * 就为了这个
+   */
   @Override
   public BoundSql getBoundSql(Object parameterObject) {
     return new BoundSql(configuration, sql, parameterMappings, parameterObject);
