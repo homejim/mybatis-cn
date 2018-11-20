@@ -49,6 +49,7 @@ import org.apache.ibatis.type.TypeHandler;
 
 /**
  * @author Clinton Begin
+ * 负责Mapper.xml 解析的类
  */
 public class XMLMapperBuilder extends BaseBuilder {
 
