@@ -24,24 +24,36 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
  * @author Clinton Begin
+ * 参数映射
  */
 public class ParameterMapping {
 
   private Configuration configuration;
 
+  // 传入的参数名称
   private String property;
+  // 输入参数还是输出参数
   private ParameterMode mode;
+  // 参数的Java类型
   private Class<?> javaType = Object.class;
+  // 参数的 jdbc 类型
   private JdbcType jdbcType;
+  // 浮点参数的精度
   private Integer numericScale;
+  // 参数对应的 typeHandler
   private TypeHandler<?> typeHandler;
+  // 参数对应的 ResultMap 的Id
   private String resultMapId;
+  // 参数的 jdbcTypeName 属性
   private String jdbcTypeName;
   private String expression;
 
   private ParameterMapping() {
   }
 
+  /**
+   * 建造者
+   */
   public static class Builder {
     private ParameterMapping parameterMapping = new ParameterMapping();
 

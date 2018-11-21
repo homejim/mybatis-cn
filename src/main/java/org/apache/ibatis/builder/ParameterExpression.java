@@ -29,17 +29,28 @@ import java.util.HashMap;
  * attribute = name '=' value
  * </pre>
  *
+ * 参数表达式解析, 继承了HashMap, 但没有重写任何方法
+ *
  * @author Frank D. Martinez [mnesarco]
  */
 public class ParameterExpression extends HashMap<String, String> {
 
   private static final long serialVersionUID = -2417552199605158680L;
 
+    /**
+     * 在构造函数上就进行了解析
+     * @param expression
+     */
   public ParameterExpression(String expression) {
     parse(expression);
   }
 
+    /**
+     * 解析
+     * @param expression
+     */
   private void parse(String expression) {
+    //
     int p = skipWS(expression, 0);
     if (expression.charAt(p) == '(') {
       expression(expression, p + 1);
