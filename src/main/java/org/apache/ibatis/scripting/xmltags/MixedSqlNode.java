@@ -19,9 +19,10 @@ import java.util.List;
 
 /**
  * @author Clinton Begin
- * 含有多种 SqlNode
+ * 含有多种 SqlNode。 其是树枝节点， 因此有多个叶子节点
  */
 public class MixedSqlNode implements SqlNode {
+  // 含有的叶子节点
   private final List<SqlNode> contents;
 
   public MixedSqlNode(List<SqlNode> contents) {
@@ -34,6 +35,7 @@ public class MixedSqlNode implements SqlNode {
   @Override
   public boolean apply(DynamicContext context) {
     for (SqlNode sqlNode : contents) {
+      // 调用叶子节点的 SqlNode的apply方法
       sqlNode.apply(context);
     }
     return true;
