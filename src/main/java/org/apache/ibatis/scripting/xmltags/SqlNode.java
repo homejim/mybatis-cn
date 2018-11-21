@@ -17,7 +17,13 @@ package org.apache.ibatis.scripting.xmltags;
 
 /**
  * @author Clinton Begin
+ * SQL节点， 主要与动态SQL的解析相关
  */
 public interface SqlNode {
+  /**
+   * 根据用户传入的参数解析记录的动态SQL语句， 并添加到 DynamicContext.sqlBuilder 中进行保存
+   * @param context
+   * @return
+   */
   boolean apply(DynamicContext context);
 }
