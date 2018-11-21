@@ -28,6 +28,7 @@ import org.apache.ibatis.session.Configuration;
 
 /**
  * @author Clinton Begin
+ * 动态上下文， 用于记录动态SQL语句解析结果的
  */
 public class DynamicContext {
 
