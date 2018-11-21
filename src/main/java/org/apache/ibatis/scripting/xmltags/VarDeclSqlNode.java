@@ -17,10 +17,15 @@ package org.apache.ibatis.scripting.xmltags;
 
 /**
  * @author Frank D. Martinez [mnesarco]
+ *
+ * 动态 SQL 的 bind 节点
+ *
  */
 public class VarDeclSqlNode implements SqlNode {
 
+  // 变量
   private final String name;
+  // 表达式
   private final String expression;
 
   public VarDeclSqlNode(String var, String exp) {
@@ -30,7 +35,9 @@ public class VarDeclSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    // 解析 OGNL 表达式的值
     final Object value = OgnlCache.getValue(expression, context.getBindings());
+    // 放入DynamicContext.bindings中
     context.bind(name, value);
     return true;
   }
