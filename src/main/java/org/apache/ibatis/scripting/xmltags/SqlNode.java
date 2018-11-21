@@ -17,7 +17,7 @@ package org.apache.ibatis.scripting.xmltags;
 
 /**
  * @author Clinton Begin
- * SQL节点， 主要与动态SQL的解析相关
+ * SQL节点， 主要与SQL的解析相关
  */
 public interface SqlNode {
   /**
