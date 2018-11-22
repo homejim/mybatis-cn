@@ -42,11 +42,19 @@ public class SqlSourceBuilder extends BaseBuilder {
 
     /**
      * SQL的进一步处理
+     * @param originalSql 经过SqlNode初步处理之后的SQL语句
+     * @param parameterType 用户传入的参数类型
+     * @param additionalParameters 记录形参与实参的对应关系
+     * @return
      */
   public SqlSource parse(String originalSql, Class<?> parameterType, Map<String, Object> additionalParameters) {
+    // 创建通用标记处理器， 主要是使用其 handleToken 方法
     ParameterMappingTokenHandler handler = new ParameterMappingTokenHandler(configuration, parameterType, additionalParameters);
+    // 创建对应的解析器， 里面调用了处理器
     GenericTokenParser parser = new GenericTokenParser("#{", "}", handler);
+    // 并将内容替换为 ?
     String sql = parser.parse(originalSql);
+    // 返回一个 StaticSqlSource 对象
     return new StaticSqlSource(configuration, sql, handler.getParameterMappings());
   }
 
