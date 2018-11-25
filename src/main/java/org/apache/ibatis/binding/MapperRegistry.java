@@ -27,32 +27,54 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ *
+ * Mapper 接口及其代理对象工厂的注册中心
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
  */
 public class MapperRegistry {
 
+  // 全局配置对象， 包含了所有的配置信息
   private final Configuration config;
+  // 记录了Mapper接口及及其MapperProxyFactory的对应关系
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
   public MapperRegistry(Configuration config) {
     this.config = config;
   }
 
+  /**
+   *
+   * 获取对应的 Mapper
+   *
+   * @param type
+   * @param sqlSession
+   * @param <T>
+   * @return
+   */
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+    // 通过 type 来获取对应的 MapperProxyFactory， 找不到直接抛出异常
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
     if (mapperProxyFactory == null) {
       throw new BindingException("Type " + type + " is not known to the MapperRegistry.");
     }
     try {
+      // 通过反射创建Mapper的代理对象
       return mapperProxyFactory.newInstance(sqlSession);
     } catch (Exception e) {
       throw new BindingException("Error getting mapper instance. Cause: " + e, e);
     }
   }
-  
+
+  /**
+   * 是否含有该接口， 就是在 knownMappers 调用 containsKe 方法
+   * @param type
+   * @param <T>
+   * @return
+   */
   public <T> boolean hasMapper(Class<T> type) {
     return knownMappers.containsKey(type);
   }
@@ -88,6 +110,7 @@ public class MapperRegistry {
   }
 
   /**
+   * 获取所有的mappers
    * @since 3.2.2
    */
   public Collection<Class<?>> getMappers() {
@@ -95,6 +118,7 @@ public class MapperRegistry {
   }
 
   /**
+   * 添加 packageName 下的所有 superType 对象到 knownMappers 中
    * @since 3.2.2
    */
   public void addMappers(String packageName, Class<?> superType) {
@@ -107,6 +131,7 @@ public class MapperRegistry {
   }
 
   /**
+   * 通过包名， 创建其下的所有Mapper对象
    * @since 3.2.2
    */
   public void addMappers(String packageName) {
