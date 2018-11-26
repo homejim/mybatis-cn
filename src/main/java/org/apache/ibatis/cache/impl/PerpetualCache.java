@@ -23,14 +23,19 @@ import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
 
 /**
+ * 默认的缓存类， 其基本是根据 HashMap 类的方法进行
+ *
  * @author Clinton Begin
  */
 public class PerpetualCache implements Cache {
 
+  // 缓存的 id
   private final String id;
 
+  // 用于记录缓存对象
   private Map<Object, Object> cache = new HashMap<>();
 
+  // 提供的患有 String 参数作为 id 的构造器
   public PerpetualCache(String id) {
     this.id = id;
   }
