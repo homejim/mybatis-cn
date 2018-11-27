@@ -24,14 +24,24 @@ import org.apache.ibatis.cache.Cache;
 /**
  * Lru (least recently used) cache decorator
  *
+ * 最近最少使用的缓存装饰类
+ *
  * @author Clinton Begin
  */
 public class LruCache implements Cache {
 
+  // 被装饰的 Cache
   private final Cache delegate;
+  // LinkedHashMap 来记录换成对象
   private Map<Object, Object> keyMap;
+  // 最近最少使用的 key
   private Object eldestKey;
 
+  /**
+   * 默认大小为 1024
+   *
+   * @param delegate
+   */
   public LruCache(Cache delegate) {
     this.delegate = delegate;
     setSize(1024);
@@ -47,10 +57,15 @@ public class LruCache implements Cache {
     return delegate.getSize();
   }
 
+  /**
+   * 使用 LinkedHashMap 来实现 Lru
+   * @param size
+   */
   public void setSize(final int size) {
+    // 第三个参数 accessOrder 为 true, 访问的时候会改变其顺序
     keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
       private static final long serialVersionUID = 4267176411845948333L;
-
+      // 重写 removeEldestEntry
       @Override
       protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
         boolean tooBig = size() > size;
@@ -65,12 +80,12 @@ public class LruCache implements Cache {
   @Override
   public void putObject(Object key, Object value) {
     delegate.putObject(key, value);
-    cycleKeyList(key);
+    cycleKeyList(key);// 检查并清理缓存
   }
 
   @Override
   public Object getObject(Object key) {
-    keyMap.get(key); //touch
+    keyMap.get(key); //touch， 改变顺序
     return delegate.getObject(key);
   }
 
@@ -92,7 +107,7 @@ public class LruCache implements Cache {
 
   private void cycleKeyList(Object key) {
     keyMap.put(key, key);
-    if (eldestKey != null) {
+    if (eldestKey != null) {// eldestKey 非空则进行移除
       delegate.removeObject(eldestKey);
       eldestKey = null;
     }
