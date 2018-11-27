@@ -36,6 +36,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 /**
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  * @author Lasse Voss
@@ -43,6 +44,7 @@ import java.util.*;
  */
 public class MapperMethod {
 
+  // 记录了 SQL 语句的名称和类型
   private final SqlCommand command;
   private final MethodSignature method;
 
@@ -213,23 +215,30 @@ public class MapperMethod {
 
   }
 
+  /**
+   * 静态内部类
+   */
   public static class SqlCommand {
 
+    // SQL 语句的名称
     private final String name;
+    // SQL 语句的类型， 枚举类型
     private final SqlCommandType type;
 
     public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method) {
+      // 获取方法的名称
       final String methodName = method.getName();
+      // 方法的声明类
       final Class<?> declaringClass = method.getDeclaringClass();
       MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass,
-          configuration);
+              configuration);
       if (ms == null) {
-        if(method.getAnnotation(Flush.class) != null){
+        if (method.getAnnotation(Flush.class) != null) {
           name = null;
           type = SqlCommandType.FLUSH;
         } else {
           throw new BindingException("Invalid bound statement (not found): "
-              + mapperInterface.getName() + "." + methodName);
+                  + mapperInterface.getName() + "." + methodName);
         }
       } else {
         name = ms.getId();
