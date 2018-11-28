@@ -75,7 +75,11 @@ public class ArrayUtil {
    * <li>{@code thisObj} and {@code thatObj} are arrays with the same component type and
    * equals() method of {@link Arrays} returns <code>true</code> (not deepEquals())</li>
    * </ul>
-   * 
+   *
+   * 判断两个对象是否equals
+   * 1. 都为 null
+   * 2. 相同类型，且不是数组类，  则调用他们自己的 equals 函数
+   * 3. 数组类：元素类型相同， 则通过 Arrays.equals 函数
    * @param thisObj
    *          The left hand object to compare. May be an array or <code>null</code>
    * @param thatObj
@@ -83,11 +87,13 @@ public class ArrayUtil {
    * @return <code>true</code> if two objects are equal; <code>false</code> otherwise.
    */
   public static boolean equals(Object thisObj, Object thatObj) {
+    // 同时为 null 则返回 true
     if (thisObj == null) {
       return thatObj == null;
     } else if (thatObj == null) {
       return false;
     }
+    // 类型相同， 不是数组类
     final Class<?> clazz = thisObj.getClass();
     if (!clazz.equals(thatObj.getClass())) {
       return false;
@@ -95,6 +101,7 @@ public class ArrayUtil {
     if (!clazz.isArray()) {
       return thisObj.equals(thatObj);
     }
+    // 数组类：元素类型相同， 则通过 Arrays.equals 函数
     final Class<?> componentType = clazz.getComponentType();
     if (long.class.equals(componentType)) {
       return Arrays.equals((long[]) thisObj, (long[]) thatObj);
