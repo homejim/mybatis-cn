@@ -127,19 +127,27 @@ public class ArrayUtil {
   /**
    * If the {@code obj} is an array, toString() method of {@link Arrays} is called. Otherwise
    * {@link Object#toString()} is called. Returns "null" if {@code obj} is <code>null</code>.
-   * 
+   *
+   * toString 方法类似：
+   * 1. 对象为 null : 返回 "null"
+   * 2. 对象不是数组， 返回对象本身的 toString() 方法
+   * 3. 对象是数组类： Arrays.toString 方法进行处理
+   *
    * @param obj
    *          An object. May be an array or <code>null</code>.
    * @return String representation of the {@code obj}.
    */
   public static String toString(Object obj) {
+    // null 的情况
     if (obj == null) {
       return "null";
     }
+    // 对象不是数组， 返回对象本身的 toString() 方法
     final Class<?> clazz = obj.getClass();
     if (!clazz.isArray()) {
       return obj.toString();
     }
+    // 对象是数组类： Arrays.toString 方法进行处理
     final Class<?> componentType = obj.getClass().getComponentType();
     if (long.class.equals(componentType)) {
       return Arrays.toString((long[]) obj);
