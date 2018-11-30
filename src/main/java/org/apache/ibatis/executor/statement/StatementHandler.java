@@ -26,30 +26,39 @@ import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.session.ResultHandler;
 
 /**
+ * 核心类， 与执行相关
  * @author Clinton Begin
  */
 public interface StatementHandler {
 
+  // 从连接中获取一个 statement
   Statement prepare(Connection connection, Integer transactionTimeout)
       throws SQLException;
 
+  // 绑定 statement 执行时所需要的参数
   void parameterize(Statement statement)
       throws SQLException;
 
+  // 批量
   void batch(Statement statement)
       throws SQLException;
 
+  // update|delete|insert
   int update(Statement statement)
       throws SQLException;
 
+  // 查询 select
   <E> List<E> query(Statement statement, ResultHandler resultHandler)
       throws SQLException;
 
+  // 游标查询
   <E> Cursor<E> queryCursor(Statement statement)
       throws SQLException;
 
+   // 获取绑定的 sql
   BoundSql getBoundSql();
 
+  // 获取封装的 PrameterHandler
   ParameterHandler getParameterHandler();
 
 }
