@@ -30,12 +30,17 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 
 /**
+ * 使用了策略模式的一个 StatementHandler 实现， 其最终调用的是实际 StatementHandler 的方法
  * @author Clinton Begin
  */
 public class RoutingStatementHandler implements StatementHandler {
 
+  // 真正的 Statement 对象
   private final StatementHandler delegate;
 
+  /**
+   * 根据指定的类型，创建对应的接口实现
+   */
   public RoutingStatementHandler(Executor executor, MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
 
     switch (ms.getStatementType()) {
