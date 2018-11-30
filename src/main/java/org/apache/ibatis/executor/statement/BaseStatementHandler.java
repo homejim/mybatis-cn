@@ -34,22 +34,31 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * 实现的一个 StatementHandler 抽象类， 主要是为了后面的类
  * @author Clinton Begin
  */
 public abstract class BaseStatementHandler implements StatementHandler {
 
+  // 全局配置文件对象
   protected final Configuration configuration;
+  // 对象工厂
   protected final ObjectFactory objectFactory;
+  // TypeHandler 管理
   protected final TypeHandlerRegistry typeHandlerRegistry;
+  // 结果处理
   protected final ResultSetHandler resultSetHandler;
+  // ParameterHandler 对象， 其主要是我为了 SQL 语句实参绑定
   protected final ParameterHandler parameterHandler;
 
+  // 记录执行 SQL 语句的 Executor 对象
   protected final Executor executor;
+  // 以下两个跟 SQL 语句相关
   protected final MappedStatement mappedStatement;
   protected final RowBounds rowBounds;
 
   protected BoundSql boundSql;
 
+  // 构造函数中除了初始化还会进行主键的处理
   protected BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) {
     this.configuration = mappedStatement.getConfiguration();
     this.executor = executor;
@@ -85,8 +94,11 @@ public abstract class BaseStatementHandler implements StatementHandler {
     ErrorContext.instance().sql(boundSql.getSql());
     Statement statement = null;
     try {
+      // 初始化 Statement， 由其子类实现
       statement = instantiateStatement(connection);
+      // 设置超时时间
       setStatementTimeout(statement, transactionTimeout);
+      // 设置 fetchSize
       setFetchSize(statement);
       return statement;
     } catch (SQLException e) {
@@ -100,11 +112,14 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
   protected abstract Statement instantiateStatement(Connection connection) throws SQLException;
 
+  // 设置超时时间
   protected void setStatementTimeout(Statement stmt, Integer transactionTimeout) throws SQLException {
     Integer queryTimeout = null;
     if (mappedStatement.getTimeout() != null) {
+      // mappedStatement 中存有， 则从中拿
       queryTimeout = mappedStatement.getTimeout();
     } else if (configuration.getDefaultStatementTimeout() != null) {
+      // 或者从 Configuration 中获取
       queryTimeout = configuration.getDefaultStatementTimeout();
     }
     if (queryTimeout != null) {
@@ -113,6 +128,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
     StatementUtil.applyTransactionTimeout(stmt, queryTimeout, transactionTimeout);
   }
 
+  // 设置每次取出的数量
   protected void setFetchSize(Statement stmt) throws SQLException {
     Integer fetchSize = mappedStatement.getFetchSize();
     if (fetchSize != null) {
@@ -125,6 +141,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
     }
   }
 
+  // 关闭 Statement
   protected void closeStatement(Statement statement) {
     try {
       if (statement != null) {
@@ -135,6 +152,10 @@ public abstract class BaseStatementHandler implements StatementHandler {
     }
   }
 
+  /**
+   * 执行前生成主键：调用KeyGenerator.processBefore()
+   * @param parameter
+   */
   protected void generateKeys(Object parameter) {
     KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
     ErrorContext.instance().store();
