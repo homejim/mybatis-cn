@@ -47,7 +47,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
   protected final TypeHandlerRegistry typeHandlerRegistry;
   // 结果处理
   protected final ResultSetHandler resultSetHandler;
-  // ParameterHandler 对象， 其主要是我为了 SQL 语句实参绑定
+  // ParameterHandler 对象， 其主要是为了 SQL 语句实参绑定
   protected final ParameterHandler parameterHandler;
 
   // 记录执行 SQL 语句的 Executor 对象
