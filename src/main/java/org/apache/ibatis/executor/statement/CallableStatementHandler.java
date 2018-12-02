@@ -36,6 +36,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.JdbcType;
 
 /**
+ * 存储过程处理
  * @author Clinton Begin
  */
 public class CallableStatementHandler extends BaseStatementHandler {
@@ -44,11 +45,18 @@ public class CallableStatementHandler extends BaseStatementHandler {
     super(executor, mappedStatement, parameter, rowBounds, resultHandler, boundSql);
   }
 
+  /**
+   * insert | update |delete
+   */
   @Override
   public int update(Statement statement) throws SQLException {
+    // 获取 CallableStatement
     CallableStatement cs = (CallableStatement) statement;
+    // 执行
     cs.execute();
+    // 更新的行数
     int rows = cs.getUpdateCount();
+    // 主键处理
     Object parameterObject = boundSql.getParameterObject();
     KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
     keyGenerator.processAfter(executor, mappedStatement, cs, parameterObject);
@@ -56,12 +64,18 @@ public class CallableStatementHandler extends BaseStatementHandler {
     return rows;
   }
 
+  /**
+   * 批量
+   */
   @Override
   public void batch(Statement statement) throws SQLException {
     CallableStatement cs = (CallableStatement) statement;
     cs.addBatch();
   }
 
+  /**
+   * 查询
+   */
   @Override
   public <E> List<E> query(Statement statement, ResultHandler resultHandler) throws SQLException {
     CallableStatement cs = (CallableStatement) statement;
@@ -71,6 +85,9 @@ public class CallableStatementHandler extends BaseStatementHandler {
     return resultList;
   }
 
+  /**
+   * 游标查询
+   */
   @Override
   public <E> Cursor<E> queryCursor(Statement statement) throws SQLException {
     CallableStatement cs = (CallableStatement) statement;
@@ -80,6 +97,9 @@ public class CallableStatementHandler extends BaseStatementHandler {
     return resultList;
   }
 
+  /**
+   * 初始化
+   */
   @Override
   protected Statement instantiateStatement(Connection connection) throws SQLException {
     String sql = boundSql.getSql();
@@ -96,6 +116,9 @@ public class CallableStatementHandler extends BaseStatementHandler {
     parameterHandler.setParameters((CallableStatement) statement);
   }
 
+  /**
+   * 注册参数
+   */
   private void registerOutputParameters(CallableStatement cs) throws SQLException {
     List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
     for (int i = 0, n = parameterMappings.size(); i < n; i++) {
