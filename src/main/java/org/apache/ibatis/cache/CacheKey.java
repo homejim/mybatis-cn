@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.ibatis.reflection.ArrayUtil;
 
 /**
+ * 缓存的主键
  * @author Clinton Begin
  */
 public class CacheKey implements Cloneable, Serializable {

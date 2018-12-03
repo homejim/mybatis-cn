@@ -16,6 +16,7 @@
 package org.apache.ibatis.executor;
 
 /**
+ * 枚举类型， 这是一个单例模式啊
  * @author Clinton Begin
  */
 public enum ExecutionPlaceholder {
