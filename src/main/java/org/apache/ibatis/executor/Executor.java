@@ -28,38 +28,53 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
+ * 执行器
  * @author Clinton Begin
  */
 public interface Executor {
 
   ResultHandler NO_RESULT_HANDLER = null;
 
+  // insert | update | delete 语句执行
   int update(MappedStatement ms, Object parameter) throws SQLException;
 
+  // select
   <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, CacheKey cacheKey, BoundSql boundSql) throws SQLException;
 
+  // select
   <E> List<E> query(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler) throws SQLException;
 
+  // select 返回游标
   <E> Cursor<E> queryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds) throws SQLException;
 
+  // 批量
   List<BatchResult> flushStatements() throws SQLException;
 
+  // 提交事务
   void commit(boolean required) throws SQLException;
 
+  // 回滚
   void rollback(boolean required) throws SQLException;
 
+  // 创建缓存中使用的 CacheKey
   CacheKey createCacheKey(MappedStatement ms, Object parameterObject, RowBounds rowBounds, BoundSql boundSql);
 
+  // 根据 CacheKey 查找缓存
   boolean isCached(MappedStatement ms, CacheKey key);
 
+  // 清空一级缓存
   void clearLocalCache();
 
+  // 延迟加载一级缓存中的数据
   void deferLoad(MappedStatement ms, MetaObject resultObject, String property, CacheKey key, Class<?> targetType);
 
+  // 获取事务
   Transaction getTransaction();
 
+  // 关闭 Executor 对象
   void close(boolean forceRollback);
 
+  // 是否已经关闭
   boolean isClosed();
 
   void setExecutorWrapper(Executor executor);
