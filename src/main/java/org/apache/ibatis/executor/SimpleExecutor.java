@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * 简单Executor实现类
  * @author Clinton Begin
  */
 public class SimpleExecutor extends BaseExecutor {
@@ -40,32 +41,57 @@ public class SimpleExecutor extends BaseExecutor {
     super(configuration, transaction);
   }
 
+
+  /**
+   * 更新（insert | udpdate | delete）实现
+   * @param ms
+   * @param parameter
+   * @return
+   * @throws SQLException
+   */
   @Override
   public int doUpdate(MappedStatement ms, Object parameter) throws SQLException {
     Statement stmt = null;
     try {
+      // 获取配置
       Configuration configuration = ms.getConfiguration();
+      // 获取 StatementHandler
       StatementHandler handler = configuration.newStatementHandler(this, ms, parameter, RowBounds.DEFAULT, null, null);
+      // 准备 Statement
       stmt = prepareStatement(handler, ms.getStatementLog());
+      // 执行
       return handler.update(stmt);
     } finally {
+      // 关闭
       closeStatement(stmt);
     }
   }
 
+  /**
+   * 查询
+   */
   @Override
   public <E> List<E> doQuery(MappedStatement ms, Object parameter, RowBounds rowBounds, ResultHandler resultHandler, BoundSql boundSql) throws SQLException {
+    // 使用 Statement
     Statement stmt = null;
     try {
+      // 获取配置对象
       Configuration configuration = ms.getConfiguration();
+      // 获取对应的 StatementHandler
       StatementHandler handler = configuration.newStatementHandler(wrapper, ms, parameter, rowBounds, resultHandler, boundSql);
+      // Statement 初始化
       stmt = prepareStatement(handler, ms.getStatementLog());
+      // 查询并完成结果映射
       return handler.<E>query(stmt, resultHandler);
     } finally {
+      // 关闭
       closeStatement(stmt);
     }
   }
 
+  /**
+   * 查询， 游标
+   */
   @Override
   protected <E> Cursor<E> doQueryCursor(MappedStatement ms, Object parameter, RowBounds rowBounds, BoundSql boundSql) throws SQLException {
     Configuration configuration = ms.getConfiguration();
@@ -74,15 +100,28 @@ public class SimpleExecutor extends BaseExecutor {
     return handler.<E>queryCursor(stmt);
   }
 
+  /**
+   * 返回空集合， 即不处理批处理
+   */
   @Override
   public List<BatchResult> doFlushStatements(boolean isRollback) throws SQLException {
     return Collections.emptyList();
   }
 
+  /**
+   * 准备 Statement
+   * @param handler
+   * @param statementLog
+   * @return
+   * @throws SQLException
+   */
   private Statement prepareStatement(StatementHandler handler, Log statementLog) throws SQLException {
     Statement stmt;
+    // 获取连接
     Connection connection = getConnection(statementLog);
+    // 调用 handler.prepare() 创建 Statement 对象
     stmt = handler.prepare(connection, transaction.getTimeout());
+    // 处理占位符
     handler.parameterize(stmt);
     return stmt;
   }
