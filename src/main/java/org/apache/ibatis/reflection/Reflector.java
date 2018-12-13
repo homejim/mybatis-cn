@@ -47,9 +47,9 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
  */
 public class Reflector {
 
-  // 对应的 Class 类型
+  // 记录了对应的 Class 类型
   private final Class<?> type;
-  // 可读属性的名称集合。 即存在对于的 getter 方法的属性
+  // 可读属性的名称集合。 即存在对应的 getter 方法的属性
   private final String[] readablePropertyNames;
   // 可写属性的名称集合。 即存在对应的 setter 方法的属性
   private final String[] writeablePropertyNames;
@@ -63,7 +63,6 @@ public class Reflector {
   private final Map<String, Class<?>> getTypes = new HashMap<>();
   // 默认构造方法
   private Constructor<?> defaultConstructor;
-
   // 记录所有属性名称的集合
   private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
 

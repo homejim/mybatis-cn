@@ -62,7 +62,7 @@ public class TypeParameterResolver {
   }
 
   /**
-   * 解析餐宿类型
+   * 解析参数类型
    *
    * @return The parameter types of the method as an array of {@link Type}s. If they have type parameters in the declaration,<br>
    * they will be resolved to the actual runtime {@link Type}s.
