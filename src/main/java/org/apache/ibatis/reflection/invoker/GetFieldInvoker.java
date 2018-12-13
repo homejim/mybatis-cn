@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Clinton Begin
- * Getter 的 Invoker
+ * 属性的读Invoker：因为没有相应的 getter
  */
 public class GetFieldInvoker implements Invoker {
   private final Field field;

@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author Clinton Begin
- * Setter 的 Invoker
+ * 属性的写Invoker：因为没有相应的 setter
  */
 public class SetFieldInvoker implements Invoker {
   private final Field field;
