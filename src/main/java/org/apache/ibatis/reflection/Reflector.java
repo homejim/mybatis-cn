@@ -369,7 +369,7 @@ public class Reflector {
   }
 
   /**
-   *
+   * 添加 set 成员变量： setMethods 列表和 setTypes 列表对应都要添加
    * @param field
    */
   private void addSetField(Field field) {
@@ -380,6 +380,10 @@ public class Reflector {
     }
   }
 
+  /**
+   * 添加 get 成员变量： getMethods 列表和 getTypes 列表对应都要添加
+   * @param field
+   */
   private void addGetField(Field field) {
     if (isValidPropertyName(field.getName())) {
       getMethods.put(field.getName(), new GetFieldInvoker(field));
@@ -388,6 +392,11 @@ public class Reflector {
     }
   }
 
+  /**
+   * 判断是否为合格的 Property
+   * @param name
+   * @return
+   */
   private boolean isValidPropertyName(String name) {
     return !(name.startsWith("$") || "serialVersionUID".equals(name) || "class".equals(name));
   }
@@ -594,6 +603,7 @@ public class Reflector {
   /**
    * Gets an array of the readable properties for an object
    *
+   *  获取可读列表
    * @return The array
    */
   public String[] getGetablePropertyNames() {
@@ -603,6 +613,7 @@ public class Reflector {
   /**
    * Gets an array of the writable properties for an object
    *
+   *  获取可写属性列表
    * @return The array
    */
   public String[] getSetablePropertyNames() {
