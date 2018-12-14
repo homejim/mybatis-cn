@@ -210,6 +210,10 @@ public class Reflector {
         }
     }
 
+  /**
+   * 添加 se t方法
+   * @param cls
+   */
   private void addSetMethods(Class<?> cls) {
     Map<String, List<Method>> conflictingSetters = new HashMap<>();
     // 获取类和其父类的所声明的所有方法
@@ -233,7 +237,9 @@ public class Reflector {
         List<Method> list = conflictingMethods.computeIfAbsent(name, k -> new ArrayList<>());
         list.add(method);
     }
-
+  /**
+   *  解决 setter 冲突
+   */
   private void resolveSetterConflicts(Map<String, List<Method>> conflictingSetters) {
     for (String propName : conflictingSetters.keySet()) {
       List<Method> setters = conflictingSetters.get(propName);
@@ -645,7 +651,7 @@ public class Reflector {
    * @param name
    * @return
    */
-  public String findPropertyName(String name) {
+  public String   findPropertyName(String name) {
     return caseInsensitivePropertyMap.get(name.toUpperCase(Locale.ENGLISH));
   }
 }
