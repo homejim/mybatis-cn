@@ -124,6 +124,8 @@ public class Reflector {
    * @param cls
    */
   private void addGetMethods(Class<?> cls) {
+    // 注意该变量的类型， Map<String, List<Method>>， name 是String的类型， 但是 value 是 List
+    // 说明会有同一个属性名称对应多个方法， 理解了这个， 在冲突解决时就好理解多了
     Map<String, List<Method>> conflictingGetters = new HashMap<>();
     // 类和其父类的所声明的所有方法
     Method[] methods = getClassMethods(cls);
@@ -156,16 +158,20 @@ public class Reflector {
      */
     private void resolveGetterConflicts(Map<String, List<Method>> conflictingGetters) {
         // 遍历 getter 方法的集合
+        // 子类重写父类的方法时， 返回值可能会是父类方法返回值的子类， 因此， 会导致同一个属性有多个方法
         for (Entry<String, List<Method>> entry : conflictingGetters.entrySet()) {
             Method winner = null;
             String propName = entry.getKey();
+            // 详情请看我的微博吧
             for (Method candidate : entry.getValue()) {
                 if (winner == null) {
                     winner = candidate;
                     continue;
                 }
+                // winner 方法返回值
                 Class<?> winnerType = winner.getReturnType();
-                Class<?> candidateType = candidate.getReturnType();
+                // candidate 方法返回值
+              Class<?> candidateType = candidate.getReturnType();
                 // 返回值相同
                 if (candidateType.equals(winnerType)) {
                     // 返回值相同
@@ -211,10 +217,13 @@ public class Reflector {
     }
 
   /**
-   * 添加 se t方法
+   * 添加 set方法
+   *
    * @param cls
    */
   private void addSetMethods(Class<?> cls) {
+    // 注意该变量的类型， Map<String, List<Method>>， name 是String的类型， 但是 value 是 List
+    // 说明会有同一个属性名称对应多个方法
     Map<String, List<Method>> conflictingSetters = new HashMap<>();
     // 获取类和其父类的所声明的所有方法
     Method[] methods = getClassMethods(cls);
@@ -223,7 +232,9 @@ public class Reflector {
       String name = method.getName();
       if (name.startsWith("set") && name.length() > 3) {
         if (method.getParameterTypes().length == 1) {
+          // 获取属性名称
           name = PropertyNamer.methodToProperty(name);
+          // 添加到集合中
           addMethodConflict(conflictingSetters, name, method);
         }
       }
