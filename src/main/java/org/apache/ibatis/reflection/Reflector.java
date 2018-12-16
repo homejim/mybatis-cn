@@ -297,6 +297,7 @@ public class Reflector {
     Class<?> paramType2 = setter2.getParameterTypes()[0];
     // paramType1 是 paramType2 的父类或接口。
     // paramType1 与 paramType2同一个类或接口
+    // 谁是子类返回谁
     if (paramType1.isAssignableFrom(paramType2)) {
       return setter2;
     } else if (paramType2.isAssignableFrom(paramType1)) {

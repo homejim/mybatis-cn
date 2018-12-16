@@ -51,7 +51,7 @@ public class MetaClass {
   }
 
   /**
-   *
+   * 通过属性名称， 获取属性的 MetaClass
    */
   public MetaClass metaClassForProperty(String name) {
     Class<?> propType = reflector.getGetterType(name);
