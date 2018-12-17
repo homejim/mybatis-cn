@@ -76,14 +76,23 @@ public class MetaClass {
     return findProperty(name);
   }
 
+  /**
+   * 获取可读属性的集合
+   */
   public String[] getGetterNames() {
     return reflector.getGetablePropertyNames();
   }
-
+  /**
+   * 获取可写属性的集合
+   */
   public String[] getSetterNames() {
     return reflector.getSetablePropertyNames();
   }
 
+  /**
+   * 获取 setter 类型
+   * @param name 表达式
+   */
   public Class<?> getSetterType(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
@@ -93,7 +102,10 @@ public class MetaClass {
       return reflector.getSetterType(prop.getName());
     }
   }
-
+  /**
+   * 获取 getter 类型
+   * @param name 表达式
+   */
   public Class<?> getGetterType(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {

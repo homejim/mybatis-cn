@@ -77,6 +77,10 @@ public class PropertyTokenizer implements Iterator<PropertyTokenizer> {
     return children != null;
   }
 
+  /**
+   * 通过该方法进行迭代
+   * @return
+   */
   @Override
   public PropertyTokenizer next() {
     return new PropertyTokenizer(children);
