@@ -90,7 +90,7 @@ public class MetaClass {
   }
 
   /**
-   * 获取 setter 类型
+   * 获取 setter 类型：递归
    * @param name 表达式
    */
   public Class<?> getSetterType(String name) {
@@ -103,7 +103,7 @@ public class MetaClass {
     }
   }
   /**
-   * 获取 getter 类型
+   * 获取 getter 类型：递归
    * @param name 表达式
    */
   public Class<?> getGetterType(String name) {
@@ -129,6 +129,11 @@ public class MetaClass {
     return MetaClass.forClass(propType, reflectorFactory);
   }
 
+    /**
+     * 从表达式中获取getter Class类型
+     * @param prop
+     * @return
+     */
   private Class<?> getGetterType(PropertyTokenizer prop) {
     Class<?> type = reflector.getGetterType(prop.getName());
     if (prop.getIndex() != null && Collection.class.isAssignableFrom(type)) {
@@ -148,25 +153,37 @@ public class MetaClass {
     return type;
   }
 
+    /**
+     * 获取属性的泛型 getter
+     * @param propertyName
+     * @return
+     */
   private Type getGenericGetterType(String propertyName) {
     try {
       Invoker invoker = reflector.getGetInvoker(propertyName);
+      // 如果是方法， 返回其返回值类型
       if (invoker instanceof MethodInvoker) {
         Field _method = MethodInvoker.class.getDeclaredField("method");
         _method.setAccessible(true);
         Method method = (Method) _method.get(invoker);
         return TypeParameterResolver.resolveReturnType(method, reflector.getType());
       } else if (invoker instanceof GetFieldInvoker) {
-        Field _field = GetFieldInvoker.class.getDeclaredField("field");
-        _field.setAccessible(true);
-        Field field = (Field) _field.get(invoker);
-        return TypeParameterResolver.resolveFieldType(field, reflector.getType());
+          // 如果是 GetFieldInvoker， 返回其属性类型
+          Field _field = GetFieldInvoker.class.getDeclaredField("field");
+          _field.setAccessible(true);
+          Field field = (Field) _field.get(invoker);
+          return TypeParameterResolver.resolveFieldType(field, reflector.getType());
       }
     } catch (NoSuchFieldException | IllegalAccessException ignored) {
     }
     return null;
   }
 
+    /**
+     * 判断是否有 setter， 最终由 reflector 来判断
+     * @param name
+     * @return
+     */
   public boolean hasSetter(String name) {
     PropertyTokenizer prop = new PropertyTokenizer(name);
     if (prop.hasNext()) {
@@ -182,7 +199,7 @@ public class MetaClass {
   }
 
   /**
-   * 查找属性是否有对应得属性
+   * 查找属性是否有对应的getter
    *
    * @param name
    * @return
@@ -203,14 +220,31 @@ public class MetaClass {
     }
   }
 
+    /**
+     * 获取 GetInvoker
+     * @param name
+     * @return
+     */
   public Invoker getGetInvoker(String name) {
     return reflector.getGetInvoker(name);
   }
 
+    /**
+     * 获取 SetInvoker
+     * @param name
+     * @return
+     */
   public Invoker getSetInvoker(String name) {
     return reflector.getSetInvoker(name);
   }
 
+    /**
+     * 解析属性表达式
+     * 会去寻找reflector中是否有对应的的属性
+     * @param name
+     * @param builder
+     * @return
+     */
   private StringBuilder buildProperty(String name, StringBuilder builder) {
     // 解析属性表达式
     PropertyTokenizer prop = new PropertyTokenizer(name);
@@ -224,10 +258,11 @@ public class MetaClass {
         builder.append(".");
         // 创建对应的 MetaClass 对象
         MetaClass metaProp = metaClassForProperty(propertyName);
-        // 解析子表达式
+        // 解析子表达式, 递归
         metaProp.buildProperty(prop.getChildren(), builder);
       }
     } else {
+      // 根据名称查找属性
       String propertyName = reflector.findPropertyName(name);
       if (propertyName != null) {
         builder.append(propertyName);
@@ -236,6 +271,10 @@ public class MetaClass {
     return builder;
   }
 
+    /**
+     * 是否有默认构造函数
+     * @return
+     */
   public boolean hasDefaultConstructor() {
     return reflector.hasDefaultConstructor();
   }
