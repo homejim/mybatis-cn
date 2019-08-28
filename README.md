@@ -43,4 +43,4 @@ MyBatis 是一款优秀的支持自定义 SQL 查询、存储过程和高级映�
 对此， 你可以参考以前[别人的注释](https://github.com/homejim/mybatis-cn-2014)。
 
 或者， 在我的博客中给我留言
-测试
+测试2
