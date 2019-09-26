@@ -19,12 +19,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
+ * 动态代理相关的参数
+ *
  * @author Clinton Begin
  */
 public class Invocation {
 
+  // 拦截的对象
   private final Object target;
+  // 方法
   private final Method method;
+  // 对应的参数
   private final Object[] args;
 
   public Invocation(Object target, Method method, Object[] args) {
