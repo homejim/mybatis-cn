@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 插件的注解
+ * 方法签名信息
  *
  * @author Clinton Begin
  */
