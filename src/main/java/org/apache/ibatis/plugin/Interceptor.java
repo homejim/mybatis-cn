@@ -34,7 +34,7 @@ public interface Interceptor {
   Object intercept(Invocation invocation) throws Throwable;
 
   /**
-   * 是否应用插件。 即用来决定是否执行上面的 intercept 方法
+   * 代理
    *
    * @param target
    * @return
